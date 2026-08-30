@@ -17,10 +17,17 @@
                 <x-theme-toggle />
 
                 @auth
-                    <a href="/dashboard" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors">Dashboard</a>
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30 hover:bg-gold-500/30 transition-colors">Admin Portal</a>
+                    @endif
+                    <a href="{{ route('dashboard') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors">Dashboard</a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <x-button type="submit" variant="ghost" size="sm">Sign Out</x-button>
+                    </form>
                 @else
-                    <a href="/login" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors">Login</a>
-                    <x-button href="/register" size="sm">Register</x-button>
+                    <a href="{{ route('login') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors">Login</a>
+                    <x-button href="{{ route('register') }}" size="sm">Register</x-button>
                 @endauth
 
                 {{-- Mobile menu button --}}
@@ -36,10 +43,17 @@
                 <a href="/" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Home</a>
                 <a href="/books" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Books</a>
                 @auth
-                    <a href="/dashboard" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Dashboard</a>
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-gold-600 dark:text-gold-400">Admin Portal</a>
+                    @endif
+                    <a href="{{ route('dashboard') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Dashboard</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-button type="submit" variant="ghost" size="sm" class="w-full justify-start">Sign Out</x-button>
+                    </form>
                 @else
-                    <a href="/login" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Login</a>
-                    <x-button href="/register" size="sm" class="w-fit">Register</x-button>
+                    <a href="{{ route('login') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Login</a>
+                    <x-button href="{{ route('register') }}" size="sm" class="w-fit">Register</x-button>
                 @endauth
             </div>
         </div>

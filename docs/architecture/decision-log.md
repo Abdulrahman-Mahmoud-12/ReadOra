@@ -70,4 +70,21 @@ Chosen solution: Use a `RecommendationService` with weighted local signals first
 
 Reason: Favorites, borrowing history, categories, authors, popularity, and availability are enough for a useful prototype and can be tested deterministically.
 
-Consequences: Recommendations are explainable and cheap. RAG/vector capabilities can be added later without replacing the user-facing contract.
+## Decision 005: Native Laravel Auth with Strict Middleware Boundaries
+
+Date: 2026-08-31
+
+Problem: Authentication and authorization must be secure, lightweight, and prevent unauthorized access to user/admin sections.
+
+Options:
+
+- External authentication packages / scaffolding (Breeze/Jetstream).
+- Custom insecure token sessions.
+- Clean Laravel native controllers, Form Requests, and custom `AdminMiddleware`.
+
+Chosen solution: Implement lightweight native Laravel session controllers with dedicated Form Requests (`LoginRequest`, `RegisterRequest`) and `AdminMiddleware`.
+
+Reason: Minimizes external dependency bloat while strictly adhering to Laravel security best practices, CSRF protection, rate limiting, and explicit HTTP 403 authorization boundaries.
+
+Consequences: Clear separation of patron routes (`/dashboard`) and admin routes (`/admin`) with full control over the styling and UX matching ReadOra branding.
+

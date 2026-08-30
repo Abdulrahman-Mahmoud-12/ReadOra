@@ -1,22 +1,23 @@
 # Current Phase
 
-Current Phase: Phase 1 - Laravel Foundation
+Current Phase: Phase 2 — Authentication and Authorization
 
-Status: Complete, awaiting user confirmation to begin Phase 2.
+Status: Complete, awaiting user confirmation to begin Phase 3.
 
 Completed:
 
-- Installed Laravel Boost and generated Laravel-specific agent guidance.
-- Verified PHP and Composer are available.
-- Confirmed Laravel project structure and dependency installation.
-- Configured ReadOra environment placeholders, including AI provider variables.
-- Added Tailwind CSS v4 theme tokens for the ReadOra navy and gold visual identity.
-- Added branded public assets for logo, dark logo, and favicon.
-- Added Blade layout foundations for public, guest, and admin surfaces.
-- Added reusable Blade components for logo, navbar, footer, buttons, inputs, and theme switching.
-- Implemented persistent light, dark, and system theme behavior without page-load theme flashing.
-- Added a Phase 1 foundation feature test for the home page shell.
-- Verified the Laravel home page and production Vite build.
+- Implemented users role migration adding `role` (`user`, `admin`) with indexing.
+- Updated `User` model with `role` fillable and `isAdmin()`, `isUser()` role helpers.
+- Updated `UserFactory` with default `user` role and `admin()` state.
+- Implemented `AdminMiddleware` and registered `'admin'` alias in `bootstrap/app.php`.
+- Implemented `LoginRequest` with rate limiting and `RegisterRequest` with validation rules.
+- Implemented `RegisteredUserController` and `AuthenticatedSessionController`.
+- Created authenticated Patron dashboard (`/dashboard`) and Admin overview (`/admin`).
+- Built responsive, accessible authentication Blade views (`auth/login.blade.php`, `auth/register.blade.php`, `dashboard.blade.php`, `admin/dashboard.blade.php`) using ReadOra components.
+- Updated public navigation bar to conditionally render dashboard and admin links, and provide a direct logout action.
+- Configured test environment for MySQL integration testing.
+- Created and executed comprehensive feature test suites (`AuthenticationTest.php`, `AuthorizationTest.php`, `FoundationPageTest.php`) with 100% passing tests (16 tests, 43 assertions).
+- Formatted code with Laravel Pint.
 
 In Progress:
 
@@ -24,27 +25,27 @@ In Progress:
 
 Pending:
 
-- Phase 2 - Authentication and Authorization.
-- Registration, login, logout, and password management.
-- Roles, permissions, middleware, and admin/user separation.
-- Authorization tests for user and admin access.
+- Phase 3 — Database and Library Data.
+- Books, authors, publishers, categories, and book copies schema and relationships.
+- Seeder and import pipeline for realistic library dataset (100–300 books).
+- Database integrity, availability, and searchability tests.
 
 Known Issues:
 
-- Authentication routes such as `/login`, `/register`, `/dashboard`, and `/admin` are linked from the shell but will be implemented in Phase 2.
-- The admin layout has a desktop sidebar foundation only; full mobile admin navigation belongs with the authenticated admin interface.
+- None.
 
 Testing Instructions:
 
-1. Run `php artisan test --compact tests/Feature/FoundationPageTest.php`.
+1. Run `php artisan test --compact`.
 2. Run `npm run build`.
-3. Open the home page and verify the navbar, footer, responsive shell, and theme picker.
+3. Test registering a new account at `/register`, signing in at `/login`, and signing out.
+4. Verify non-admin patrons are forbidden (403) from accessing `/admin`.
 
 Recommended Commit:
 
 ```bash
 git add .
-git commit -m "feat: complete phase 01 foundation"
+git commit -m "feat: implement authentication and authorization"
 ```
 
-Next Phase: Phase 2 - Authentication and Authorization
+Next Phase: Phase 3 — Database and Library Data
