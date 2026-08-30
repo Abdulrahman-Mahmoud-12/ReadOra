@@ -20,7 +20,15 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-readora-paper font-sans antialiased dark:bg-readora-midnight">
-        {{ $slot }}
+    <body class="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased dark:bg-navy-950 dark:text-gray-100">
+        <div class="flex min-h-screen flex-col">
+            <x-navbar />
+
+            <main class="flex-1">
+                {{ $slot }}
+            </main>
+
+            <x-footer />
+        </div>
     </body>
 </html>

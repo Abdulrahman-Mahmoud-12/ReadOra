@@ -1,26 +1,29 @@
 # AI Configuration
 
-ReadOra selects its AI provider with:
+ReadOra supports two AI providers: NVIDIA NIM and OpenRouter.
+
+## Environment Variables
 
 ```env
-AI_PROVIDER=nvidia
-```
+AI_PROVIDER=nvidia        # Options: nvidia, openrouter
 
-Supported planned values:
-
-- `nvidia`
-- `openrouter`
-
-Required placeholders:
-
-```env
+# NVIDIA NIM
 NVIDIA_NIM_API_KEY=
 NVIDIA_NIM_BASE_URL=
 NVIDIA_NIM_MODEL=
 
+# OpenRouter
 OPENROUTER_API_KEY=
 OPENROUTER_BASE_URL=
 OPENROUTER_MODEL=
 ```
 
-Actual credentials must stay in local environment files or deployment secrets.
+## Switching Providers
+
+1. Set `AI_PROVIDER` to either `nvidia` or `openrouter`
+2. Fill in the corresponding API key, base URL, and model
+3. Clear the config cache: `php artisan config:clear`
+
+## Config File
+
+See `config/ai.php` for the provider configuration structure.

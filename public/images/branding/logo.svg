@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" fill="none">
+  <!-- Book icon -->
+  <g transform="translate(0, 4)">
+    <path d="M4 4C4 2.89543 4.89543 2 6 2H14C14 2 16 2 16 4V28C16 28 14 27 12 27H6C4.89543 27 4 26.1046 4 25V4Z" fill="#1e293b" />
+    <path d="M16 4C16 2 18 2 18 2H26C27.1046 2 28 2.89543 28 4V25C28 26.1046 27.1046 27 26 27H20C18 27 16 28 16 28V4Z" fill="#0f172a" />
+    <path d="M8 8H13" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M8 12H12" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M19 8H24" stroke="#d97706" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M19 12H23" stroke="#d97706" stroke-width="1.5" stroke-linecap="round" />
+    <circle cx="16" cy="30" r="2" fill="#f59e0b" />
+  </g>
+  <!-- Text -->
+  <text x="38" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700">
+    <tspan fill="#0f172a">Read</tspan><tspan fill="#d97706">Ora</tspan>
+  </text>
+</svg>

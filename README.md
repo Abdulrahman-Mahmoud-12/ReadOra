@@ -6,12 +6,11 @@ The project is being built phase by phase according to `INSTRUCTIONS.md`.
 
 ## Current Status
 
-Phase 0 - Planning and Architecture is complete and awaiting approval before Laravel application scaffolding begins.
+Phase 1 - Laravel Foundation is complete.
 
 Start here:
 
 - `INSTRUCTIONS.md`
-- `docs/architecture/phase-0-plan.md`
 - `docs/architecture/decision-log.md`
 - `docs/progress/current-phase.md`
 
