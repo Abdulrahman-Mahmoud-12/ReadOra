@@ -58,3 +58,13 @@
 - Built multi-facet discovery engine on `BookController::index` with categories, languages, minimum ratings, publication eras, and shelf availability filters.
 - Redesigned `books/index.blade.php` with 2-column layout, sticky faceted filter sidebar, active filter dismissible chips, and query highlighting.
 - Added comprehensive feature test suite `AdvancedSearchTest.php` (100% passing) and documented features in `docs/features/search-and-filters.md`.
+- Completed Phase 9: Book Reviews, Ratings & Patron Feedback.
+- Implemented `reviews` table, `Review` model, and aggregate rating recalculation system.
+- Added Patron review submission, star rating distribution chart, and community reviews feed on Book Details (`books/show.blade.php`).
+- Built Admin Reviews Moderation interface (`/admin/reviews`) with status transitions and audit logging.
+- Added comprehensive feature test suite `ReviewSystemTest.php` (100% passing) and documented features in `docs/features/reviews-and-ratings.md`.
+- Completed Phase 10: Reading Lists, Custom Shelves & Activity Feed.
+- Implemented `reading_lists` and `book_reading_list` schema with automatic default shelves ("Want to Read", "Currently Reading", "Read").
+- Created Reading Lists management suite (`/reading-lists`) with card previews, creation modal, and public sharing.
+- Integrated quick "Add to Reading Shelf" dropdown menu on Book Details (`books/show.blade.php`).
+- Added comprehensive feature test suite `ReadingListTest.php` (100% passing) and documented features in `docs/features/reading-lists.md`.

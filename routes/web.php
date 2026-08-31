@@ -8,14 +8,17 @@ use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminCirculationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminPublisherController;
+use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\User\BorrowingController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\ReadingListController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,6 +32,7 @@ Route::get('/', function () {
 
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/{slug}', [BookController::class, 'show'])->name('books.show');
+Route::get('/lists/{slug}', [ReadingListController::class, 'publicShow'])->name('reading-lists.public');
 
 /*
 |--------------------------------------------------------------------------
@@ -60,8 +64,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
     Route::post('/borrowings/{borrowing}/renew', [BorrowingController::class, 'renew'])->name('borrowings.renew');
 
+    // Reading Lists & Custom Shelves
+    Route::get('/reading-lists', [ReadingListController::class, 'index'])->name('reading-lists.index');
+    Route::post('/reading-lists', [ReadingListController::class, 'store'])->name('reading-lists.store');
+    Route::get('/reading-lists/{slug}', [ReadingListController::class, 'show'])->name('reading-lists.show');
+    Route::patch('/reading-lists/{readingList}', [ReadingListController::class, 'update'])->name('reading-lists.update');
+    Route::delete('/reading-lists/{readingList}', [ReadingListController::class, 'destroy'])->name('reading-lists.destroy');
+    Route::post('/reading-lists/{readingList}/books/{book}', [ReadingListController::class, 'addBook'])->name('reading-lists.books.add');
+    Route::delete('/reading-lists/{readingList}/books/{book}', [ReadingListController::class, 'removeBook'])->name('reading-lists.books.remove');
+
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Reviews & Ratings
+    Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
 /*
@@ -95,6 +112,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Reviews Moderation
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::patch('/reviews/{review}/status', [AdminReviewController::class, 'updateStatus'])->name('reviews.status');
+    Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // Audit Logs
     Route::get('/audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');

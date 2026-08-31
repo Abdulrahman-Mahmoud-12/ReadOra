@@ -36,10 +36,14 @@
                     Dashboard
                 </a>
 
-                <div class="pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-3">Circulation</div>
+                <div class="pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-3">Circulation & Feedback</div>
                 <a href="{{ route('admin.circulations.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.circulations.*') ? 'bg-gold-500 text-navy-950 font-bold' : 'hover:bg-navy-800 text-gray-300 hover:text-white' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                     Circulation Desk
+                </a>
+                <a href="{{ route('admin.reviews.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.reviews.*') ? 'bg-gold-500 text-navy-950 font-bold' : 'hover:bg-navy-800 text-gray-300 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                    Patron Reviews
                 </a>
 
                 <div class="pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-3">Catalog Management</div>

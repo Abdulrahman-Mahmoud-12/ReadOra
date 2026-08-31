@@ -119,6 +119,59 @@ class Book extends Model
     }
 
     /**
+     * Get all patron reviews for this book.
+     *
+     * @return HasMany<Review>
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Reading lists containing this book.
+     *
+     * @return BelongsToMany<ReadingList>
+     */
+    public function readingLists(): BelongsToMany
+    {
+        return $this->belongsToMany(ReadingList::class, 'book_reading_list')
+            ->withPivot(['id', 'notes', 'order'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get approved patron reviews for public display.
+     *
+     * @return HasMany<Review>
+     */
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->where('status', Review::STATUS_APPROVED);
+    }
+
+    /**
+     * Calculate star rating distribution breakdown (counts & percentages).
+     *
+     * @return array<int, array{count: int, percentage: float}>
+     */
+    public function ratingDistribution(): array
+    {
+        $distribution = [];
+        $total = $this->approvedReviews()->count();
+
+        for ($stars = 5; $stars >= 1; $stars--) {
+            $count = $this->approvedReviews()->where('rating', $stars)->count();
+            $distribution[$stars] = [
+                'count' => $count,
+                'percentage' => $total > 0 ? round(($count / $total) * 100, 1) : 0.0,
+            ];
+        }
+
+        return $distribution;
+    }
+
+    /**
      * Scope a query to records matching the catalog search term across all fields.
      */
     public function scopeSearch(Builder $query, string $term): Builder

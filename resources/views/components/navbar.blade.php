@@ -11,6 +11,7 @@
                 <a href="/" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('home') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">Home</a>
                 <a href="{{ route('books.index') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('books.*') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">Catalog</a>
                 @auth
+                    <a href="{{ route('reading-lists.index') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('reading-lists.*') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">My Shelves</a>
                     <a href="{{ route('favorites.index') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('favorites.index') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">Favorites</a>
                     <a href="{{ route('borrowings.index') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('borrowings.index') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">Borrowings</a>
                 @endauth
@@ -49,6 +50,7 @@
                 <a href="{{ route('books.index') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Catalog</a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Dashboard</a>
+                    <a href="{{ route('reading-lists.index') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">My Shelves</a>
                     <a href="{{ route('favorites.index') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Favorites</a>
                     <a href="{{ route('borrowings.index') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Borrowings</a>
                     <a href="{{ route('profile.show') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Profile</a>

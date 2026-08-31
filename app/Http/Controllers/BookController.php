@@ -124,19 +124,42 @@ class BookController extends Controller
     }
 
     /**
-     * Display a specific book's bibliographic details and copy inventory.
+     * Display a specific book's bibliographic details, copy inventory, and patron reviews.
      */
     public function show(string $slug): View
     {
         $book = Book::query()
             ->where('slug', $slug)
-            ->with(['publisher', 'authors', 'categories', 'copies'])
+            ->with([
+                'publisher',
+                'authors',
+                'categories',
+                'copies',
+                'approvedReviews.user',
+            ])
             ->firstOrFail();
 
+        $user = auth()->user();
+        if ($user) {
+            $user->ensureDefaultShelves();
+        }
+
+        $userReview = $user
+            ? $book->reviews()->where('user_id', $user->id)->first()
+            : null;
+
+        $userReadingLists = $user
+            ? $user->readingLists()->with('books')->get()
+            : collect();
+
+        $ratingDistribution = $book->ratingDistribution();
         $relatedBooks = $this->recommendationService->getSimilarBooks($book, 4);
 
         return view('books.show', [
             'book' => $book,
+            'userReview' => $userReview,
+            'userReadingLists' => $userReadingLists,
+            'ratingDistribution' => $ratingDistribution,
             'relatedBooks' => $relatedBooks,
         ]);
     }

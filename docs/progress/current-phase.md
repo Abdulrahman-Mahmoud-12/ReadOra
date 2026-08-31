@@ -1,26 +1,23 @@
 # Current Phase
 
-Current Phase: Phase 8 — Advanced Search, Multi-Filter & Facets
+Current Phase: Phase 10 — Reading Lists, Custom Shelves & Activity Feed
 
-Status: Complete, awaiting user confirmation to begin Phase 9.
+Status: Complete, awaiting user confirmation to begin Phase 11.
 
 Completed:
 
-- Enhanced `Book::scopeSearch` to perform multi-field lookups across title, subtitle, description, ISBN-10/13, authors, categories, and publisher.
-- Redesigned `BookController::index` to handle multi-faceted search:
-  - Multi-select categories (`categories[]`).
-  - Multi-select languages (`languages[]`).
-  - Minimum rating threshold (`min_rating` e.g. 4.5+, 4.0+, 3.5+).
-  - Publication Era / Decade presets (`2020s`, `2010s`, `2000s`, `1900-1999`, `classic`).
-  - Shelf availability status (`availability=available`).
-  - Multi-mode sorting (`rating_desc`, `popular`, `year_desc`, `year_asc`, `title_asc`, `title_desc`).
-- Rebuilt `resources/views/books/index.blade.php` with a 2-column discovery interface:
-  - Sticky Facet Sidebar with category counts, language filters, rating selectors, and era dropdowns.
-  - Active filter chips with individual `×` removal links and global "Reset All" action.
-  - Search query feedback banner.
-  - Responsive 3-column book card grid.
-- Optimized Eloquent queries with full relationship eager-loading (`publisher`, `authors`, `categories`, `copies`) to guarantee zero N+1 query overhead.
-- Created automated test suite `tests/Feature/AdvancedSearchTest.php` with 5 feature scenarios covering all search and facet dimensions (100% passing).
+- Created migrations for `reading_lists` and `book_reading_list` pivot tables with unique constraints.
+- Created `ReadingList` model with automatic slug generation, relationships (`user()`, `books()` with pivot data), and scopes (`public()`, `private()`).
+- Added `readingLists()` relationship and `ensureDefaultShelves()` auto-initialization method to `User` model.
+- Added `readingLists()` relationship to `Book` model.
+- Implemented `ReadingListController` covering overview, list creation, shelf detail, public sharing, book addition/removal, notes, and activity logging.
+- Built Patron Shelves views:
+  - `user/reading-lists/index.blade.php`: Shelf card collages, count pills, privacy status, and creation modal.
+  - `user/reading-lists/show.blade.php`: Shelf detail view with book cards, personal notes, quick remove, privacy toggling, and share button.
+  - `user/reading-lists/public-show.blade.php`: Publicly shareable reading lists for visitors.
+- Enhanced Book Details view (`books/show.blade.php`) with an interactive "Add to Reading Shelf" dropdown menu.
+- Added "My Shelves" navigation link to top and mobile navigation bars.
+- Created automated test suite `tests/Feature/ReadingListTest.php` with 5 scenarios covering initialization, creation, book addition/removal, guest access, and authorization (100% passing).
 - Formatted all code with Laravel Pint.
 
 In Progress:
@@ -29,7 +26,7 @@ In Progress:
 
 Pending:
 
-- Phase 9 — Book Reviews, Ratings & Patron Feedback.
+- Phase 11 — Import/Export, Analytics & Reports.
 
 Known Issues:
 
@@ -37,17 +34,18 @@ Known Issues:
 
 Testing Instructions:
 
-1. Run `vendor/bin/phpunit --colors=never tests/Feature/AdvancedSearchTest.php`.
-2. Visit `/books` in browser.
-3. Test searching for keywords (e.g. `Architecture`, `Martin`, `Python`).
-4. Select rating filters (★ 4.5+), era filters, and category multi-select.
-5. Click active filter removal `×` chips and "Reset All".
+1. Run `vendor/bin/phpunit --colors=never tests/Feature/ReadingListTest.php`.
+2. Sign in as patron (`patron@readora.test` / `password`).
+3. Click "My Shelves" in the navbar (`/reading-lists`) to see your auto-initialized shelves ("Want to Read", "Currently Reading", "Read").
+4. Create a new custom list (e.g. "Favorites of 2026", Public).
+5. Open any book in the catalog (`/books/clean-code`) and click "Add to Reading Shelf" to add the book.
+6. Open your shelf to see the book and test removing it or sharing the public link.
 
 Recommended Commit:
 
 ```bash
 git add .
-git commit -m "feat: implement Phase 8 advanced search and faceted filters"
+git commit -m "feat: implement Phase 10 reading lists and custom shelves"
 ```
 
-Next Phase: Phase 9 — Book Reviews, Ratings & Patron Feedback
+Next Phase: Phase 11 — Import/Export, Analytics & Reports

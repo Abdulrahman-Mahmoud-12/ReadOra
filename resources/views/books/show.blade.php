@@ -143,6 +143,54 @@
                                 </button>
                             </form>
 
+                            {{-- Reading Shelves Dropdown Menu --}}
+                            <div class="relative" id="shelves-menu-container">
+                                <button
+                                    type="button"
+                                    onclick="document.getElementById('shelves-dropdown').classList.toggle('hidden')"
+                                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border border-gold-400/40 bg-gold-500/10 text-gold-700 dark:text-gold-300 hover:bg-gold-500/20 transition-colors"
+                                >
+                                    <svg class="w-4 h-4 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                    Add to Reading Shelf
+                                    <svg class="w-3.5 h-3.5 ml-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                </button>
+
+                                <div id="shelves-dropdown" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-700 rounded-xl shadow-xl z-30 p-2 space-y-1 text-xs">
+                                    <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Select Shelf / List</div>
+                                    @foreach($userReadingLists as $shelf)
+                                        @php $inShelf = $shelf->hasBook($book); @endphp
+                                        <div class="flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-navy-800 transition-colors">
+                                            <span class="font-medium text-gray-800 dark:text-gray-200 truncate {{ $inShelf ? 'text-gold-600 dark:text-gold-400 font-bold' : '' }}">
+                                                {{ $shelf->name }}
+                                            </span>
+
+                                            @if($inShelf)
+                                                <form method="POST" action="{{ route('reading-lists.books.remove', [$shelf, $book]) }}" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:underline">
+                                                        Remove
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <form method="POST" action="{{ route('reading-lists.books.add', [$shelf, $book]) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="text-[10px] font-bold text-navy-800 dark:text-gold-400 hover:underline">
+                                                        + Add
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    @endforeach
+
+                                    <div class="pt-1.5 border-t border-gray-100 dark:border-navy-800 mt-1">
+                                        <a href="{{ route('reading-lists.index') }}" class="block text-center text-[10px] font-bold text-gold-600 dark:text-gold-400 hover:underline">
+                                            Manage All Shelves →
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="p-3 bg-navy-50 dark:bg-navy-950 rounded-xl border border-navy-100 dark:border-navy-800 text-xs text-gray-600 dark:text-gray-400">
                                 <span class="font-semibold text-navy-800 dark:text-gold-300">Patron Loan Limit:</span> 14 days standard borrowing period with online renewal.
                             </div>
@@ -292,6 +340,178 @@
                                 @endforelse
                             </tbody>
                         </table>
+                </div>
+
+                {{-- Patron Reviews & Ratings Breakdown Section --}}
+                <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-navy-800 dark:bg-navy-900 sm:p-8">
+                    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 dark:border-navy-800 pb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Patron Reviews & Ratings</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Community feedback and ratings for this edition.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl font-extrabold text-gray-900 dark:text-white">{{ number_format($book->average_rating, 1) }}</span>
+                            <div>
+                                <div class="flex text-gold-400">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <svg class="w-4 h-4 {{ $i <= round($book->average_rating) ? 'fill-current' : 'text-gray-300 dark:text-navy-700' }}" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                    @endfor
+                                </div>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">{{ number_format($book->ratings_count) }} ratings</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Rating Distribution Progress Bars --}}
+                    <div class="mb-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-gray-50 dark:bg-navy-950 p-5 rounded-xl">
+                        <div class="md:col-span-7 space-y-2 text-xs">
+                            @foreach($ratingDistribution as $star => $data)
+                                <div class="flex items-center gap-3">
+                                    <span class="w-12 font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">{{ $star }} ★</span>
+                                    <div class="flex-1 h-2.5 bg-gray-200 dark:bg-navy-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gold-500 rounded-full transition-all duration-500" style="width: {{ $data['percentage'] }}%"></div>
+                                    </div>
+                                    <span class="w-10 text-right text-[11px] text-gray-500 dark:text-gray-400 font-mono">{{ $data['percentage'] }}%</span>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="md:col-span-5 text-center md:border-l border-gray-200 dark:border-navy-800 md:pl-6">
+                            @auth
+                                <p class="text-xs text-gray-600 dark:text-gray-300 mb-2">
+                                    {{ $userReview ? 'You rated this book:' : 'Have you read this book?' }}
+                                </p>
+                                @if($userReview)
+                                    <div class="inline-flex items-center gap-1 text-gold-500 font-bold mb-2">
+                                        {{ $userReview->rating }} / 5 Stars ★
+                                    </div>
+                                @endif
+                                <a href="#review-form" class="inline-block px-4 py-2 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold rounded-lg text-xs shadow-sm transition-colors">
+                                    {{ $userReview ? 'Edit Your Review' : 'Write a Patron Review' }}
+                                </a>
+                            @else
+                                <p class="text-xs text-gray-600 dark:text-gray-300 mb-3">Sign in to share your thoughts with fellow readers.</p>
+                                <a href="{{ route('login') }}" class="px-4 py-2 bg-navy-900 dark:bg-gold-500 text-white dark:text-navy-950 font-bold rounded-lg text-xs shadow-sm">
+                                    Sign In to Review
+                                </a>
+                            @endauth
+                        </div>
+                    </div>
+
+                    {{-- Review Submission Form --}}
+                    @auth
+                        <div id="review-form" class="mb-8 rounded-xl border border-gray-200 dark:border-navy-800 p-5 bg-white dark:bg-navy-900">
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3">
+                                {{ $userReview ? 'Update Your Review' : 'Write a Review' }}
+                            </h4>
+                            <form method="POST" action="{{ route('reviews.store', $book) }}" class="space-y-4">
+                                @csrf
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1">Your Rating *</label>
+                                    <div class="flex items-center gap-4 text-xs">
+                                        @for($star = 5; $star >= 1; $star--)
+                                            <label class="flex items-center gap-1 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="rating"
+                                                    value="{{ $star }}"
+                                                    {{ old('rating', $userReview?->rating ?? 5) == $star ? 'checked' : '' }}
+                                                    required
+                                                    class="text-gold-500"
+                                                >
+                                                <span class="font-bold text-gray-800 dark:text-gray-200">{{ $star }} ★</span>
+                                            </label>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1">Review Title</label>
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        value="{{ old('title', $userReview?->title) }}"
+                                        placeholder="Summarize your review in a sentence..."
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-navy-700 bg-gray-50 dark:bg-navy-950 text-xs text-gray-900 dark:text-white"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1">Review Commentary</label>
+                                    <textarea
+                                        name="content"
+                                        rows="3"
+                                        placeholder="What did you like or dislike about this book? Who would you recommend it to?"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-navy-700 bg-gray-50 dark:bg-navy-950 text-xs text-gray-900 dark:text-white"
+                                    >{{ old('content', $userReview?->content) }}</textarea>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-2">
+                                    @if($userReview)
+                                        <button
+                                            type="submit"
+                                            form="delete-review-form"
+                                            onclick="return confirm('Delete your review?');"
+                                            class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline"
+                                        >
+                                            Delete Review
+                                        </button>
+                                    @else
+                                        <span></span>
+                                    @endif
+
+                                    <button type="submit" class="px-5 py-2 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold rounded-lg text-xs shadow-sm transition-colors">
+                                        {{ $userReview ? 'Update Review' : 'Submit Review' }}
+                                    </button>
+                                </div>
+                            </form>
+
+                            @if($userReview)
+                                <form id="delete-review-form" method="POST" action="{{ route('reviews.destroy', $userReview) }}" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            @endif
+                        </div>
+                    @endauth
+
+                    {{-- Approved Reviews List --}}
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white">
+                            Community Reviews ({{ $book->approvedReviews->count() }})
+                        </h4>
+
+                        @forelse($book->approvedReviews as $rev)
+                            <div class="p-4 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-100 dark:border-navy-800 space-y-2">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-navy-900 text-gold-400 font-bold text-xs flex items-center justify-center border border-navy-700">
+                                            {{ strtoupper(substr($rev->user->name, 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <strong class="text-xs text-gray-900 dark:text-white block leading-tight">{{ $rev->user->name }}</strong>
+                                            <span class="text-[10px] text-gray-400">{{ $rev->created_at->diffForHumans() }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center text-gold-400 text-xs font-bold gap-0.5">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <svg class="w-3.5 h-3.5 {{ $i <= $rev->rating ? 'fill-current' : 'text-gray-300 dark:text-navy-700' }}" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                @if($rev->title)
+                                    <h5 class="text-xs font-bold text-gray-900 dark:text-white pt-1">{{ $rev->title }}</h5>
+                                @endif
+
+                                @if($rev->content)
+                                    <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">{{ $rev->content }}</p>
+                                @endif
+                            </div>
+                        @empty
+                            <p class="text-xs text-gray-400 py-6 text-center">No community reviews yet for this title. Be the first patron to review it!</p>
+                        @endforelse
                     </div>
                 </div>
             </div>
