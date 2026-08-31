@@ -13,4 +13,4 @@ Rate limits:
 
 - AI chat and book insights: 10 requests per minute per user and IP address.
 - Token-protected API routes: 60 requests per minute per user, or IP address
-	before authentication.
+  before authentication.

@@ -1,8 +1,8 @@
 # Current Phase
 
-Current Phase: Phase 12 — Security, Authorization, Rate Limiting & REST API Tokens
+Current Phase: Final QA and Release Readiness
 
-Status: Complete, ready for user confirmation before the next phase.
+Status: Complete for local/staging release; production deployment prerequisites remain environment-specific.
 
 Completed:
 
@@ -15,11 +15,17 @@ Completed:
 - Created automated test suite `tests/Feature/AiAssistantTest.php` with 4 test scenarios covering UI rendering, chat completions, book insights, and API fallback (100% passing).
 - Formatted all code with Laravel Pint.
 - Protected AI page, chat, and book insights routes with authentication and
-	named rate limits.
+  named rate limits.
 - Added hashed personal API tokens with six-month expiry, bearer middleware,
-	token revocation, and the protected `/api/me` endpoint.
+  token revocation, and the protected `/api/me` endpoint.
 - Added security tests for AI authentication, token issuance, hashing, invalid
-	tokens, and revocation.
+  tokens, and revocation.
+- Added global security response headers and production environment guidance.
+- Completed deployment, environment, API, AI, security, feature, testing, and
+  final QA documentation.
+- Fixed the stale admin authorization test assertion.
+- Verified the complete PHPUnit suite: 84 tests and 306 assertions passed.
+- Verified the production Vite build and Composer dependency audit.
 
 In Progress:
 
@@ -27,12 +33,13 @@ In Progress:
 
 Pending:
 
-- User confirmation before starting Phase 13.
+- Revoke and replace the exposed local AI credentials.
+- Configure production infrastructure, HTTPS, backups, monitoring, and secrets.
 
 Known Issues:
 
 - API tokens are intentionally minimal and do not yet support named abilities.
-- Rotate credentials exposed during local development.
+- Vite reports an optional `fontaine` optimization package warning.
 
 Testing Instructions:
 
@@ -47,4 +54,4 @@ git add .
 git commit -m "feat: harden AI access and add API bearer tokens"
 ```
 
-Next Phase: Phase 13 — Production Hardening
+Next Phase: Production deployment after environment-specific release gates pass.

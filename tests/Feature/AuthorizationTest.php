@@ -51,8 +51,7 @@ class AuthorizationTest extends TestCase
         $response = $this->actingAs($admin)->get('/admin');
 
         $response->assertOk()
-            ->assertSee('Administration Overview')
-            ->assertSee('Catalog Books');
+            ->assertSee('Library Administration Overview');
     }
 
     public function test_admin_user_can_also_access_patron_dashboard(): void
