@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminCirculationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminPublisherController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -117,6 +118,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
     Route::patch('/reviews/{review}/status', [AdminReviewController::class, 'updateStatus'])->name('reviews.status');
     Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // Analytics, Reports & CSV Exports
+    Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export/books', [AdminReportController::class, 'exportBooks'])->name('reports.export.books');
+    Route::get('/reports/export/circulations', [AdminReportController::class, 'exportCirculations'])->name('reports.export.circulations');
+    Route::get('/reports/export/patrons', [AdminReportController::class, 'exportPatrons'])->name('reports.export.patrons');
+    Route::get('/reports/export/copies', [AdminReportController::class, 'exportCopies'])->name('reports.export.copies');
 
     // Audit Logs
     Route::get('/audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');

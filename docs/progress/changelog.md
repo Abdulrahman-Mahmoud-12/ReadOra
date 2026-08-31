@@ -68,3 +68,7 @@
 - Created Reading Lists management suite (`/reading-lists`) with card previews, creation modal, and public sharing.
 - Integrated quick "Add to Reading Shelf" dropdown menu on Book Details (`books/show.blade.php`).
 - Added comprehensive feature test suite `ReadingListTest.php` (100% passing) and documented features in `docs/features/reading-lists.md`.
+- Completed Phase 11: Import/Export, Reports & Circulation Analytics.
+- Built Circulation Reports & Analytics Center (`/admin/reports`) with loan KPIs, top borrowed titles, patron leaderboards, and overdue alerts.
+- Implemented UTF-8 BOM streaming CSV exports for Books Catalog, Loans, Registered Patrons, and Physical Shelf Inventory.
+- Added comprehensive feature test suite `AdminReportsTest.php` (100% passing) and documented features in `docs/features/reports-and-analytics.md`.
