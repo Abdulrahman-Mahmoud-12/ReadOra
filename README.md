@@ -6,7 +6,7 @@ The project is being built phase by phase according to `INSTRUCTIONS.md`.
 
 ## Current Status
 
-Phase 1 - Laravel Foundation is complete.
+Phase 3 - Database and Library Data is complete.
 
 Start here:
 

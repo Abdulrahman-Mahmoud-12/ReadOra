@@ -6,7 +6,7 @@
 ])
 
 @php
-    $base = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-navy-900';
+    $base = 'inline-flex min-w-0 items-center justify-center gap-2 text-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-navy-900';
 
     $variants = [
         'primary' => 'bg-gold-500 hover:bg-gold-600 text-navy-900 focus:ring-gold-400 shadow-sm',

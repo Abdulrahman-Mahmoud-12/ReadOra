@@ -1,8 +1,8 @@
 # Current Phase
 
-Current Phase: Phase 2 — Authentication and Authorization
+Current Phase: Phase 4 — User Interface
 
-Status: Complete, awaiting user confirmation to begin Phase 3.
+Status: Complete, awaiting user confirmation to begin Phase 5.
 
 Completed:
 
@@ -13,10 +13,17 @@ Completed:
 - Implemented `LoginRequest` with rate limiting and `RegisterRequest` with validation rules.
 - Implemented `RegisteredUserController` and `AuthenticatedSessionController`.
 - Created authenticated Patron dashboard (`/dashboard`) and Admin overview (`/admin`).
-- Built responsive, accessible authentication Blade views (`auth/login.blade.php`, `auth/register.blade.php`, `dashboard.blade.php`, `admin/dashboard.blade.php`) using ReadOra components.
-- Updated public navigation bar to conditionally render dashboard and admin links, and provide a direct logout action.
-- Configured test environment for MySQL integration testing.
-- Created and executed comprehensive feature test suites (`AuthenticationTest.php`, `AuthorizationTest.php`, `FoundationPageTest.php`) with 100% passing tests (16 tests, 43 assertions).
+- Built responsive, accessible authentication Blade views (`auth/login.blade.php`, `auth/register.blade.php`).
+- Implemented normalized catalog tables for books, authors, publishers, categories, book copies, and pivots.
+- Added Eloquent models, factories, casts, relationships, search scope, and availability helpers.
+- Replaced CSV data resources with native SQL database seeder (`Database\Seeders\BookDatasetSeeder`) containing 107 real Gutenberg book records.
+- Added demo admin/user seeders and idempotent database seeder pipeline.
+- Implemented Book Discovery & Catalog interface (`/books`) with full search, category filtering, author filtering, copy availability toggle, sorting, and pagination.
+- Implemented Book Details view (`/books/{slug}`) showing full metadata, synopsis, authors, publisher, physical copy inventory with shelf locations, and related books.
+- Enhanced Patron Dashboard (`/dashboard`) with live catalog metrics, recommendations preview, and quick shortcuts.
+- Implemented Patron space pages: Saved Favorites (`/favorites`), Borrowing & Circulation History (`/borrowings`), and Profile & Settings (`/profile`) with Digital Library Card.
+- Built reusable Blade components: `x-book-card`, `x-badge`, `x-stat-card`, `x-empty-state`, and responsive navbar.
+- Created comprehensive automated feature test suites (`BookDiscoveryTest.php`, `UserDashboardTest.php`) with 100% passing rate.
 - Formatted code with Laravel Pint.
 
 In Progress:
@@ -25,10 +32,10 @@ In Progress:
 
 Pending:
 
-- Phase 3 — Database and Library Data.
-- Books, authors, publishers, categories, and book copies schema and relationships.
-- Seeder and import pipeline for realistic library dataset (100–300 books).
-- Database integrity, availability, and searchability tests.
+- Phase 5 — Borrowing System.
+- Checkout lifecycle, due date tracking, return processing.
+- Overdue detection and automatic renewal logic.
+- Admin circulation management desk.
 
 Known Issues:
 
@@ -36,16 +43,17 @@ Known Issues:
 
 Testing Instructions:
 
-1. Run `php artisan test --compact`.
-2. Run `npm run build`.
-3. Test registering a new account at `/register`, signing in at `/login`, and signing out.
-4. Verify non-admin patrons are forbidden (403) from accessing `/admin`.
+1. Run `vendor/bin/phpunit --colors=never`.
+2. Visit `/books` to search, filter by category/availability, and sort books.
+3. Click any book to view `/books/{slug}` bibliographic details and physical copy status.
+4. Sign in as patron (`patron@readora.test` / `password`) and visit `/dashboard`, `/favorites`, `/borrowings`, and `/profile`.
+5. Update your profile name on `/profile` and verify instantaneous persistence.
 
 Recommended Commit:
 
 ```bash
 git add .
-git commit -m "feat: implement authentication and authorization"
+git commit -m "feat: implement Phase 4 user interface and book discovery"
 ```
 
-Next Phase: Phase 3 — Database and Library Data
+Next Phase: Phase 5 — Borrowing System

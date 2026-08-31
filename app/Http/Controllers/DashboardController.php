@@ -2,18 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     /**
-     * Display the patron user dashboard.
+     * Display the patron user dashboard with live catalog metrics and recommendations.
      */
     public function __invoke(Request $request): View
     {
+        $user = $request->user();
+
+        $totalBooks = Book::query()->count();
+        $availableBooks = Book::query()->whereHas('copies', fn ($q) => $q->where('status', 'available'))->count();
+        $categoriesCount = Category::query()->count();
+
+        $recommendedBooks = Book::query()
+            ->with(['authors', 'categories', 'copies'])
+            ->orderByDesc('average_rating')
+            ->take(4)
+            ->get();
+
+        $recentlyAdded = Book::query()
+            ->with(['authors', 'categories', 'copies'])
+            ->latest('id')
+            ->take(4)
+            ->get();
+
+        $popularCategories = Category::query()
+            ->withCount('books')
+            ->orderByDesc('books_count')
+            ->take(6)
+            ->get();
+
         return view('dashboard', [
-            'user' => $request->user(),
+            'user' => $user,
+            'totalBooks' => $totalBooks,
+            'availableBooks' => $availableBooks,
+            'categoriesCount' => $categoriesCount,
+            'recommendedBooks' => $recommendedBooks,
+            'recentlyAdded' => $recentlyAdded,
+            'popularCategories' => $popularCategories,
         ]);
     }
 }

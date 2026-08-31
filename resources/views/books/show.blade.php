@@ -1,0 +1,266 @@
+<x-layouts.app :title="$book->title . ' — ReadOra'">
+    @php
+        $availableCopies = $book->availableCopiesCount();
+        $isAvailable = $book->isAvailable();
+        $authorsString = $book->authors->pluck('name')->join(', ') ?: 'Unknown Author';
+        $rating = (float) $book->average_rating;
+    @endphp
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {{-- Breadcrumbs --}}
+        <nav class="mb-6 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <a href="/" class="hover:text-navy-600 dark:hover:text-gold-400 transition-colors">Home</a>
+            <span>/</span>
+            <a href="{{ route('books.index') }}" class="hover:text-navy-600 dark:hover:text-gold-400 transition-colors">Catalog</a>
+            <span>/</span>
+            <span class="text-gray-900 dark:text-white font-medium truncate max-w-xs sm:max-w-md">{{ $book->title }}</span>
+        </nav>
+
+        {{-- Main Book Profile --}}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12">
+            {{-- Left Column: Book Spine Cover & Actions --}}
+            <div class="lg:col-span-4 flex flex-col gap-6">
+                {{-- Stylized Book Cover --}}
+                <div class="relative mx-auto flex aspect-[3/4] w-full max-w-sm flex-col justify-between overflow-hidden rounded-lg border border-navy-800 bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 p-6 shadow-2xl sm:p-8">
+                    {{-- Decorative pattern --}}
+                    <div class="absolute inset-0 opacity-15">
+                        <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <pattern id="show-pattern" width="24" height="24" patternUnits="userSpaceOnUse">
+                                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" stroke-width="0.5" class="text-gold-400" />
+                                </pattern>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#show-pattern)" />
+                        </svg>
+                    </div>
+
+                    {{-- Left decorative spine --}}
+                    <div class="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-gold-600 to-gold-400/40 border-r border-gold-400/30"></div>
+
+                    <div class="relative pl-3">
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                            @foreach($book->categories as $category)
+                                <x-badge variant="gold" size="sm">
+                                    {{ $category->name }}
+                                </x-badge>
+                            @endforeach
+                        </div>
+
+                        <h1 class="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                            {{ $book->title }}
+                        </h1>
+                        @if($book->subtitle)
+                            <p class="text-sm text-gold-300 font-medium mt-1">
+                                {{ $book->subtitle }}
+                            </p>
+                        @endif
+                    </div>
+
+                    <div class="relative pl-3 pt-6 border-t border-navy-700/80">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Author</p>
+                        <p class="text-base text-white font-medium mt-0.5">
+                            {{ $authorsString }}
+                        </p>
+                        @if($book->publisher)
+                            <p class="text-xs text-gray-400 mt-2">Published by <span class="text-gray-300 font-medium">{{ $book->publisher->name }}</span></p>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Action Panel Card --}}
+                <div class="mx-auto w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-navy-800 dark:bg-navy-900">
+                    <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-navy-800">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Library Status</span>
+                        <x-badge :variant="$isAvailable ? 'available' : 'borrowed'" size="md">
+                            {{ $isAvailable ? "{$availableCopies} Available" : 'Currently Unavailable' }}
+                        </x-badge>
+                    </div>
+
+                    <div class="space-y-3">
+                        <x-button
+                            href="{{ route('borrowings.index') }}"
+                            variant="primary"
+                            size="md"
+                            class="w-full justify-center"
+                        >
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            Borrow This Book
+                        </x-button>
+
+                        <x-button
+                            href="{{ route('favorites.index') }}"
+                            variant="outline"
+                            size="md"
+                            class="w-full justify-center"
+                        >
+                            <svg class="w-4 h-4 mr-2 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                            Save to Favorites
+                        </x-button>
+
+                        @auth
+                            <div class="p-3 bg-navy-50 dark:bg-navy-950 rounded-xl border border-navy-100 dark:border-navy-800 text-xs text-gray-600 dark:text-gray-400">
+                                <span class="font-semibold text-navy-800 dark:text-gold-300">Patron Loan Limit:</span> 14 days standard borrowing period with renewal option.
+                            </div>
+                        @else
+                            <p class="text-center text-xs text-gray-500 dark:text-gray-400 pt-1">
+                                <a href="{{ route('login') }}" class="text-navy-600 dark:text-gold-400 font-semibold hover:underline">Sign in</a> to reserve or borrow this physical edition.
+                            </p>
+                        @endauth
+                    </div>
+                </div>
+            </div>
+
+            {{-- Right Column: Metadata, Description & Copies Inventory --}}
+            <div class="lg:col-span-8 flex flex-col gap-8">
+                {{-- Metadata Grid Card --}}
+                <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-navy-800 dark:bg-navy-900 sm:p-8">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-gray-100 dark:border-navy-800">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $book->title }}</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">By <span class="font-semibold text-gray-900 dark:text-white">{{ $authorsString }}</span></p>
+                        </div>
+
+                        {{-- Rating Summary --}}
+                        <div class="flex items-center gap-2 bg-gold-50 dark:bg-gold-900/30 px-3.5 py-2 rounded-xl border border-gold-200 dark:border-gold-800/50">
+                            <svg class="w-5 h-5 text-gold-500 fill-current" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            <div class="text-left">
+                                <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($rating, 1) }}</span>
+                                <span class="text-[10px] text-gray-500 dark:text-gray-400 block">{{ number_format($book->ratings_count) }} ratings</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Bibliographic Specs --}}
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-b border-gray-100 dark:border-navy-800 text-xs">
+                        <div>
+                            <span class="text-gray-400 block">Publication Year</span>
+                            <span class="font-bold text-gray-900 dark:text-white text-sm mt-0.5 block">
+                                {{ $book->publication_year ? ($book->publication_year > 0 ? $book->publication_year : abs($book->publication_year) . ' BCE') : 'N/A' }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block">Page Count</span>
+                            <span class="font-bold text-gray-900 dark:text-white text-sm mt-0.5 block">
+                                {{ $book->page_count ? $book->page_count . ' pages' : 'N/A' }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block">Language</span>
+                            <span class="font-bold text-gray-900 dark:text-white text-sm mt-0.5 block uppercase">
+                                {{ $book->language }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block">Edition</span>
+                            <span class="font-bold text-gray-900 dark:text-white text-sm mt-0.5 block truncate">
+                                {{ $book->edition ?: 'Standard Edition' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Description --}}
+                    <div class="pt-6">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-white mb-2">Synopsis</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            {{ $book->description ?: 'No synopsis available for this public-domain record.' }}
+                        </p>
+                    </div>
+
+                    {{-- Identifiers & Source --}}
+                    @if($book->isbn_10 || $book->isbn_13 || $book->source_identifier)
+                        <div class="mt-6 pt-4 border-t border-gray-100 dark:border-navy-800 flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
+                            @if($book->isbn_13)
+                                <span>ISBN-13: <strong class="text-gray-700 dark:text-gray-300">{{ $book->isbn_13 }}</strong></span>
+                            @endif
+                            @if($book->isbn_10)
+                                <span>ISBN-10: <strong class="text-gray-700 dark:text-gray-300">{{ $book->isbn_10 }}</strong></span>
+                            @endif
+                            @if($book->source_identifier)
+                                <span>Catalog ID: <strong class="text-gray-700 dark:text-gray-300">{{ $book->source_identifier }}</strong></span>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Physical Copies Inventory Table --}}
+                <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-navy-800 dark:bg-navy-900 sm:p-8">
+                    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Physical Library Copies</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Inventory locations and real-time shelf status.</p>
+                        </div>
+                        <span class="text-xs font-semibold px-3 py-1 bg-navy-50 dark:bg-navy-800 rounded-lg text-navy-700 dark:text-gold-300">
+                            {{ $book->copies->count() }} Total Units
+                        </span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-50 dark:bg-navy-950 text-gray-500 dark:text-gray-400 uppercase tracking-wider text-[10px]">
+                                <tr>
+                                    <th class="px-4 py-3 rounded-l-lg">Barcode</th>
+                                    <th class="px-4 py-3">Location</th>
+                                    <th class="px-4 py-3">Condition</th>
+                                    <th class="px-4 py-3">Acquired</th>
+                                    <th class="px-4 py-3 rounded-r-lg text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-navy-800">
+                                @forelse($book->copies as $copy)
+                                    <tr class="hover:bg-gray-50/50 dark:hover:bg-navy-800/40 transition-colors">
+                                        <td class="px-4 py-3 font-mono font-semibold text-gray-900 dark:text-white">
+                                            {{ $copy->barcode }}
+                                        </td>
+                                        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                                            {{ $copy->location ?: 'Main Stacks' }}
+                                        </td>
+                                        <td class="px-4 py-3 text-gray-600 dark:text-gray-300 capitalize">
+                                            {{ $copy->condition ?: 'Good' }}
+                                        </td>
+                                        <td class="px-4 py-3 text-gray-500 dark:text-gray-400">
+                                            {{ $copy->acquisition_date ? $copy->acquisition_date->format('M d, Y') : 'Catalog Record' }}
+                                        </td>
+                                        <td class="px-4 py-3 text-right">
+                                            <x-badge :variant="$copy->status === 'available' ? 'available' : ($copy->status === 'borrowed' ? 'borrowed' : 'default')" size="sm">
+                                                {{ ucfirst($copy->status) }}
+                                            </x-badge>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+                                            No physical copies currently registered for this title.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Related Books Section --}}
+        @if($relatedBooks->isNotEmpty())
+            <div class="border-t border-gray-200 pt-8 dark:border-navy-800">
+                <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Related Books in Collection</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Works sharing related themes, genres, or classifications.</p>
+                    </div>
+                    <a href="{{ route('books.index', ['category' => $book->categories->first()?->slug]) }}" class="text-xs font-semibold text-gold-600 dark:text-gold-400 hover:underline">
+                        Browse Category →
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    @foreach($relatedBooks as $related)
+                        <x-book-card :book="$related" />
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
+</x-layouts.app>

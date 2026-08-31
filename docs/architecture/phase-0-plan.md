@@ -196,9 +196,7 @@ app/
   Policies/
   Services/
 database/
-  data/
   factories/
-  importers/
   migrations/
   seeders/
 docs/
@@ -227,7 +225,7 @@ tests/
 
 ## 10. Data Strategy for 100-300 Real Books
 
-Use a curated CSV/JSON import file with approximately 150 real public-domain or widely known books. Prefer sources such as Open Library metadata, Project Gutenberg metadata, or manually curated bibliographic records.
+Use native Laravel database seeders embedding approximately 107 real public-domain canonical books from Project Gutenberg and bibliographic records. All catalog records are seeded directly into SQL tables without external file dependencies (no CSV/JSON files).
 
 Dataset fields:
 
@@ -243,12 +241,11 @@ Dataset fields:
 - page count when available
 - language
 
-Import pipeline:
+Seeding pipeline:
 
-- Store raw curated data in `database/data/books.json`.
-- Validate and normalize through an importer class.
-- Seed authors, publishers, categories, books, and copies idempotently.
-- Avoid fake books as the main dataset.
+- Embed curated real bibliographic records directly in `Database\Seeders\BookDatasetSeeder`.
+- Seed authors, publishers, categories, books, and physical copies idempotently using DB transactions.
+- Avoid fake books as the main dataset; all 107 books are real public-domain works.
 - Keep volume moderate for development and grading.
 
 ## 11. Testing Strategy

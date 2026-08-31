@@ -26,7 +26,7 @@
             </a>
         </div>
 
-        <div class="bg-white dark:bg-navy-900 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-navy-800">
+        <div class="rounded-lg border border-gray-200 bg-white p-8 shadow-xl dark:border-navy-800 dark:bg-navy-900">
             {{ $slot }}
         </div>
     </div>
