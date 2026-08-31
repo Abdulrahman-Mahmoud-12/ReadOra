@@ -91,7 +91,15 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($recommendedBooks as $book)
-                    <x-book-card :book="$book" />
+                    <div class="flex flex-col gap-2">
+                        @if(isset($book->recommendation_reason))
+                            <span class="text-[11px] font-medium text-gold-600 dark:text-gold-400 flex items-center gap-1 truncate">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>
+                                {{ $book->recommendation_reason }}
+                            </span>
+                        @endif
+                        <x-book-card :book="$book" />
+                    </div>
                 @endforeach
             </div>
         </div>

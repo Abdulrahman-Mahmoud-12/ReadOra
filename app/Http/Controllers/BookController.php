@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Category;
+use App\Services\RecommendationService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class BookController extends Controller
 {
+    public function __construct(
+        protected RecommendationService $recommendationService
+    ) {}
+
     /**
      * Display a paginated, searchable, filterable catalog of books.
      */
@@ -82,14 +87,7 @@ class BookController extends Controller
             ->with(['publisher', 'authors', 'categories', 'copies'])
             ->firstOrFail();
 
-        $relatedBooks = Book::query()
-            ->whereKeyNot($book->id)
-            ->whereHas('categories', function ($q) use ($book) {
-                $q->whereIn('categories.id', $book->categories->pluck('id'));
-            })
-            ->with(['authors', 'categories', 'copies'])
-            ->take(4)
-            ->get();
+        $relatedBooks = $this->recommendationService->getSimilarBooks($book, 4);
 
         return view('books.show', [
             'book' => $book,

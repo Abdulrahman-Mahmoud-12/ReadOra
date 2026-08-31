@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Category;
+use App\Services\RecommendationService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected RecommendationService $recommendationService
+    ) {}
+
     /**
      * Display the patron user dashboard with live catalog metrics and recommendations.
      */
@@ -24,11 +29,8 @@ class DashboardController extends Controller
         $favoritesCount = $user->favorites()->count();
         $returnedLoansCount = $user->borrowings()->where('status', 'returned')->count();
 
-        $recommendedBooks = Book::query()
-            ->with(['authors', 'categories', 'copies'])
-            ->orderByDesc('average_rating')
-            ->take(4)
-            ->get();
+        // Content-based intelligent recommendations
+        $recommendedBooks = $this->recommendationService->getRecommendationsForUser($user, 4);
 
         $recentlyAdded = Book::query()
             ->with(['authors', 'categories', 'copies'])

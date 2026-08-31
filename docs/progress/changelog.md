@@ -40,3 +40,8 @@
 - Updated `books/show.blade.php`, `user/borrowings.blade.php`, `user/favorites.blade.php`, and `dashboard.blade.php` with real-time circulation UI and actions.
 - Added comprehensive feature test suite `BorrowingCirculationTest.php` with 100% passing tests.
 - Documented borrowing lifecycle in `docs/features/borrowing-system.md` and formatted code with Laravel Pint.
+- Completed Phase 6: Content-Based Recommendation Engine.
+- Implemented `App\Services\RecommendationService` with category affinity, author affinity, ratings quality, availability weighting, and novelty filtering.
+- Added similar books matching for book details view and recommendation reason indicators on patron dashboard.
+- Added comprehensive unit test suite `RecommendationServiceTest.php` with 100% passing tests.
+- Documented recommendation scoring architecture in `docs/features/recommendation-system.md` and formatted code with Laravel Pint.

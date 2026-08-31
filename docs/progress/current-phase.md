@@ -1,25 +1,24 @@
 # Current Phase
 
-Current Phase: Phase 5 — Borrowing System
+Current Phase: Phase 6 — Content-Based Recommendation Engine
 
-Status: Complete, awaiting user confirmation to begin Phase 6.
+Status: Complete, awaiting user confirmation to begin Phase 7.
 
 Completed:
 
-- Created migration `2026_08_31_000001_create_borrowings_table` with `borrowed_at`, `due_at`, `returned_at`, `status`, and performance composite indexes.
-- Created migration `2026_08_31_000002_create_favorites_table` with unique `(user_id, book_id)` constraint.
-- Created migration `2026_08_31_000003_create_reading_histories_table` for patron activity scoring.
-- Implemented Eloquent models `Borrowing`, `Favorite`, and `ReadingHistory` with relationships and query scopes (`active`, `overdue`, `returned`).
-- Enhanced `User`, `Book`, and `BookCopy` models with circulation relationships, status helpers, and availability checks.
-- Implemented `App\Services\BorrowingService` with database transactions, row-level locking (`lockForUpdate`), patron loan limits (max 5 active loans), duplicate checkout prevention, return handling, and 14-day renewals.
-- Updated `BorrowingController` and `FavoriteController` with full checkout, return, renewal, listing, and favorite toggle capabilities.
-- Updated web routes with secure authenticated patron circulation endpoints.
-- Updated `books/show.blade.php` with dynamic "Borrow This Book" checkout form, loan status indicators, and interactive favorites toggle button.
-- Updated `user/borrowings.blade.php` displaying active loans with countdown badges, return actions, online renewal buttons, and paginated past circulation archive.
-- Updated `user/favorites.blade.php` displaying favorited works with instant removal action.
-- Updated `DashboardController` and `dashboard.blade.php` to display live active borrowing metrics.
-- Created comprehensive automated feature test suite `BorrowingCirculationTest.php` covering checkout limits, concurrency prevention, returns, renewals, and favorites with 100% pass rate.
-- Formatted code with Laravel Pint.
+- Implemented `App\Services\RecommendationService` featuring multi-signal content-based scoring:
+  - Category affinity weighting (borrowed +3.0, favorited +2.0).
+  - Author affinity weighting (borrowed +3.0, favorited +2.0).
+  - Quality and average rating scoring.
+  - Physical copy availability bonus.
+  - Active loan novelty filtering.
+  - Graceful cold-start fallback for guest patrons.
+- Added `getSimilarBooks()` method for intelligent book-to-book similarity matching.
+- Updated `DashboardController` (`/dashboard`) with personalized recommendations and dynamic reason hints.
+- Updated `BookController::show` (`/books/{slug}`) to render intelligent similar books via `RecommendationService`.
+- Enhanced `dashboard.blade.php` with recommendation reason badges ("Matches your interest in...", "By author you read...").
+- Created comprehensive automated unit test suite `RecommendationServiceTest.php` covering category affinity, author affinity, novelty filtering, cold-start handling, and similarity matching with 100% passing tests.
+- Formatted all code with Laravel Pint.
 
 In Progress:
 
@@ -27,9 +26,11 @@ In Progress:
 
 Pending:
 
-- Phase 6 — Content-Based Recommendation Engine.
-- `RecommendationService` multi-signal affinity scoring (categories, authors, reading history, popularity).
-- Recommended works carousel on user dashboard and similar titles on book details.
+- Phase 7 — Admin Dashboard & Full Management Suite.
+- Admin circulation loans desk (active loans, overdue tracking, check-in).
+- Books, Copies, Authors, Categories, Publishers CRUD with image management.
+- User management with role demotion safeguards.
+- Audit logging (`audit_logs`) and system settings.
 
 Known Issues:
 
@@ -37,18 +38,17 @@ Known Issues:
 
 Testing Instructions:
 
-1. Run `vendor/bin/phpunit --colors=never tests/Feature/BorrowingCirculationTest.php`.
-2. Sign in as demo patron (`patron@readora.test` / `password`).
-3. Visit `/books` and click on any available title (e.g., *Pride and Prejudice*).
-4. Click **Borrow This Book** and verify redirection to `/borrowings` with active 14-day due date countdown.
-5. Click **Renew (+14d)** or **Return Book** and verify status and copy availability immediately update.
-6. Click **Save to Favorites** on any book and view it in `/favorites`.
+1. Run `vendor/bin/phpunit --colors=never tests/Unit/RecommendationServiceTest.php`.
+2. Sign in as patron (`patron@readora.test` / `password`).
+3. Favorite or borrow books in specific categories (e.g. *Computer Science* or *Fiction*).
+4. Visit `/dashboard` and verify that "Curated Recommendations" prioritizes books matching your favorited categories and authors with dynamic reason badges.
+5. Visit any book details page (e.g. `/books/clean-code`) and inspect the "Related Books" section.
 
 Recommended Commit:
 
 ```bash
 git add .
-git commit -m "feat: implement Phase 5 borrowing system and circulation lifecycle"
+git commit -m "feat: implement Phase 6 content-based recommendation engine"
 ```
 
-Next Phase: Phase 6 — Recommendation Engine
+Next Phase: Phase 7 — Admin Dashboard & Management Suite
