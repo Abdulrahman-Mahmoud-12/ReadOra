@@ -271,6 +271,42 @@
                         </p>
                     </div>
 
+                    {{-- AI Book Insights & Key Takeaways Generator --}}
+                    <div class="mt-6 pt-6 border-t border-gray-100 dark:border-navy-800">
+                        <div class="rounded-xl border border-gold-500/30 bg-gold-500/5 p-5">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 text-navy-950 font-extrabold text-xs flex items-center justify-center shrink-0 shadow-md">
+                                        AI
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold uppercase tracking-wider text-gold-700 dark:text-gold-400">ReadOra AI Deep Book Insights</h4>
+                                        <p class="text-xs text-gray-600 dark:text-gray-300">Generate structured synopsis, key takeaways & discussion questions powered by OpenRouter.</p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    id="generate-ai-insights-btn"
+                                    onclick="generateAiInsights({{ $book->id }})"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold rounded-lg text-xs shadow-sm transition-all shrink-0"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    <span>Generate AI Insights</span>
+                                </button>
+                            </div>
+
+                            {{-- AI Insights Output Container --}}
+                            <div id="ai-insights-container" class="hidden mt-5 pt-4 border-t border-gold-500/20">
+                                <div id="ai-insights-loading" class="hidden py-6 text-center text-xs text-gold-600 dark:text-gold-400 font-semibold space-y-2">
+                                    <div class="inline-block w-6 h-6 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+                                    <p>ReadOra AI is analyzing this title and synthesizing key takeaways...</p>
+                                </div>
+                                <div id="ai-insights-content" class="text-xs leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-line space-y-3"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Identifiers & Source --}}
                     @if($book->isbn_10 || $book->isbn_13 || $book->source_identifier)
                         <div class="mt-6 pt-4 border-t border-gray-100 dark:border-navy-800 flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
@@ -538,4 +574,45 @@
             </div>
         @endif
     </div>
+
+    <script>
+        async function generateAiInsights(bookId) {
+            const btn = document.getElementById('generate-ai-insights-btn');
+            const container = document.getElementById('ai-insights-container');
+            const loading = document.getElementById('ai-insights-loading');
+            const content = document.getElementById('ai-insights-content');
+
+            container.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            content.innerHTML = '';
+            btn.disabled = true;
+            btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+            try {
+                const response = await fetch(`/books/${bookId}/ai-insights`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                loading.classList.add('hidden');
+
+                if (data.success && data.insights) {
+                    let formatted = data.insights
+                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/^\s*•\s*(.*)$/gm, '• $1');
+                    content.innerHTML = formatted;
+                } else {
+                    content.innerHTML = '<p class="text-rose-500">Could not generate AI insights at this time. Please try again later.</p>';
+                }
+            } catch (err) {
+                loading.classList.add('hidden');
+                content.innerHTML = '<p class="text-rose-500">Network error while connecting to AI assistant.</p>';
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60', 'cursor-not-allowed');
+            }
+        }
+    </script>
 </x-layouts.app>

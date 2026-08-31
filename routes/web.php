@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminPublisherController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookController;
@@ -33,7 +34,12 @@ Route::get('/', function () {
 
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/{slug}', [BookController::class, 'show'])->name('books.show');
+Route::get('/books/{book}/ai-insights', [AiAssistantController::class, 'bookInsights'])->name('books.ai-insights');
 Route::get('/lists/{slug}', [ReadingListController::class, 'publicShow'])->name('reading-lists.public');
+
+// AI Librarian Assistant
+Route::get('/assistant', [AiAssistantController::class, 'index'])->name('assistant.index');
+Route::post('/assistant/chat', [AiAssistantController::class, 'chat'])->name('assistant.chat');
 
 /*
 |--------------------------------------------------------------------------

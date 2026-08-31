@@ -1,20 +1,18 @@
 # Current Phase
 
-Current Phase: Phase 11 — Import/Export, Reports & Circulation Analytics
+Current Phase: Special Module — ReadOra AI Virtual Librarian & Deep Insights (OpenRouter Integration)
 
-Status: Complete, awaiting user confirmation to begin Phase 12.
+Status: Complete, ready to proceed to Phase 12.
 
 Completed:
 
-- Built `AdminReportController` with real-time circulation KPI calculations, top borrowed books aggregation, patron activity metrics, category distribution, and overdue loan summaries.
-- Implemented high-performance streaming CSV export engine with UTF-8 BOM encoding for:
-  - Books Catalog (`/admin/reports/export/books`).
-  - Circulation Loans & Loan Statuses (`/admin/reports/export/circulations`).
-  - Registered Patrons & Engagement Stats (`/admin/reports/export/patrons`).
-  - Physical Shelf Copies & Barcode Inventory (`/admin/reports/export/copies`).
-- Created Admin Analytics view `resources/views/admin/reports/index.blade.php` with metric cards, leaderboards, overdue alert table, and quick CSV download toolbar.
-- Integrated "Analytics & Reports" in the Admin sidebar navigation.
-- Created automated test suite `tests/Feature/AdminReportsTest.php` with 4 test scenarios covering authorization, report dashboard rendering, and streaming CSV exports with 100% passing tests on MySQL.
+- Configured `OpenRouter` as the primary AI provider in `.env` and `config/services.php` using the specified API credentials.
+- Created `App\Services\AiService` with library catalog context grounding, OpenRouter chat completion execution, structured book insights generator, and graceful fallback handling.
+- Built `App\Http\Controllers\AiAssistantController` for the AI Librarian chat endpoint and asynchronous book insights generation.
+- Created interactive AI Assistant chat page `resources/views/assistant/index.blade.php` with real-time response stream, prompt chips, typing indicator, and catalog highlights.
+- Added "ReadOra AI Deep Book Insights" on-demand widget on `resources/views/books/show.blade.php`.
+- Integrated "AI Assistant" link with star badge in the top navigation bar.
+- Created automated test suite `tests/Feature/AiAssistantTest.php` with 4 test scenarios covering UI rendering, chat completions, book insights, and API fallback (100% passing).
 - Formatted all code with Laravel Pint.
 
 In Progress:
@@ -31,16 +29,15 @@ Known Issues:
 
 Testing Instructions:
 
-1. Run `vendor/bin/phpunit --colors=never tests/Feature/AdminReportsTest.php`.
-2. Sign in as admin (`admin@readora.test` / `password`).
-3. Visit `/admin/reports` to inspect circulation analytics and leaderboards.
-4. Click on any of the 4 CSV export buttons to download real-time datasets.
+1. Run `vendor/bin/phpunit --colors=never tests/Feature/AiAssistantTest.php`.
+2. Visit [`http://localhost:8000/assistant`](http://localhost:8000/assistant) to chat with the ReadOra AI Librarian.
+3. Visit any book in the catalog (e.g. `/books/clean-code`) and click **"Generate AI Insights"** to inspect the real-time AI structured synopsis and study guide.
 
 Recommended Commit:
 
 ```bash
 git add .
-git commit -m "feat: implement Phase 11 circulation reports and CSV export engine"
+git commit -m "feat: implement ReadOra AI virtual librarian and book insights via OpenRouter"
 ```
 
 Next Phase: Phase 12 — Security, Authorization, Rate Limiting & REST API Tokens

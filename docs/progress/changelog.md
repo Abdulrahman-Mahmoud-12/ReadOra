@@ -72,3 +72,8 @@
 - Built Circulation Reports & Analytics Center (`/admin/reports`) with loan KPIs, top borrowed titles, patron leaderboards, and overdue alerts.
 - Implemented UTF-8 BOM streaming CSV exports for Books Catalog, Loans, Registered Patrons, and Physical Shelf Inventory.
 - Added comprehensive feature test suite `AdminReportsTest.php` (100% passing) and documented features in `docs/features/reports-and-analytics.md`.
+- Completed AI Integration Module: ReadOra AI Virtual Librarian & Deep Book Insights.
+- Integrated OpenRouter LLM (`qwen/qwen3.8-flash`) as the primary AI intelligence provider.
+- Created `AiService` and `AiAssistantController` for conversational library recommendations and automated book analysis.
+- Built interactive AI Assistant chat page (`/assistant`) and on-demand "Generate AI Insights" widget on Book Details (`books/show.blade.php`).
+- Added comprehensive feature test suite `AiAssistantTest.php` (100% passing) and documented features in `docs/features/ai-assistant.md`.

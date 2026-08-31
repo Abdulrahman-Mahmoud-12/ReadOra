@@ -10,6 +10,10 @@
             <div class="hidden md:flex items-center gap-6">
                 <a href="/" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('home') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">Home</a>
                 <a href="{{ route('books.index') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('books.*') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">Catalog</a>
+                <a href="{{ route('assistant.index') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-600 dark:text-gold-400 hover:text-gold-500 transition-colors {{ request()->routeIs('assistant.*') ? 'underline' : '' }}">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    AI Assistant
+                </a>
                 @auth
                     <a href="{{ route('reading-lists.index') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('reading-lists.*') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">My Shelves</a>
                     <a href="{{ route('favorites.index') }}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-navy-600 dark:hover:text-gold-400 transition-colors {{ request()->routeIs('favorites.index') ? 'text-navy-600 dark:text-gold-400 font-semibold' : '' }}">Favorites</a>
@@ -48,6 +52,10 @@
             <div class="flex flex-col gap-3">
                 <a href="/" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Home</a>
                 <a href="{{ route('books.index') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Catalog</a>
+                <a href="{{ route('assistant.index') }}" class="text-sm font-semibold text-gold-600 dark:text-gold-400 flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    AI Librarian
+                </a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">Dashboard</a>
                     <a href="{{ route('reading-lists.index') }}" class="text-sm font-medium text-gray-700 transition-colors hover:text-navy-600 dark:text-gray-300 dark:hover:text-gold-400">My Shelves</a>
