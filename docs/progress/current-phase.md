@@ -1,38 +1,26 @@
 # Current Phase
 
-Current Phase: Phase 7 — Admin Dashboard & Full Management Suite
+Current Phase: Phase 8 — Advanced Search, Multi-Filter & Facets
 
-Status: Complete, awaiting user confirmation to begin Phase 8.
+Status: Complete, awaiting user confirmation to begin Phase 9.
 
 Completed:
 
-- Created `audit_logs` migration and `AuditLog` model with before/after JSON payload tracking, IP addresses, and user agents.
-- Implemented `App\Services\AuditLogger` service to safely record administrative actions with automated credential redaction.
-- Implemented Admin Dashboard (`/admin`) with real-time statistics:
-  - Total catalog works, physical copies, available copies, borrowed copies.
-  - Active circulation loans, overdue loans count.
-  - Registered patrons count and active borrowers count.
-  - Live circulation feed and audit log stream.
-- Implemented Admin Circulation Desk (`/admin/circulations`):
-  - Multi-status filter tabs (`all`, `active`, `overdue`, `returned`).
-  - Search across patrons, book titles, and copy barcodes.
-  - Quick librarian Check In / Return action and 14-day Renewal override.
-- Implemented Admin Books Management (`/admin/books`):
-  - Catalog table with search, category filtering, and pagination.
-  - Create book form with authors/categories multi-select, publisher selection, ISBNs, and initial physical copy generation.
-  - Edit book form with complete bibliographic metadata fields.
-  - Delete book action with safeguard preventing deletion if copies are actively checked out.
-- Implemented Admin Book Copies Inventory (`/admin/copies`):
-  - Barcode lookup, location, and condition manager (`new`, `good`, `fair`, `damaged`, `maintenance`).
-  - Add copy action and delete copy action (blocked if currently borrowed).
-- Implemented Authors (`/admin/authors`), Categories (`/admin/categories`), and Publishers (`/admin/publishers`) CRUD with dependency safeguards.
-- Implemented Users & Roles Management (`/admin/users`):
-  - Role promotion (`user` -> `admin`) and demotion (`admin` -> `user`).
-  - Safeguard preventing demotion or deletion of the last remaining administrator account.
-  - Safeguard preventing deletion of patrons with active unreturned loans.
-- Implemented Audit Logs viewer (`/admin/audit-logs`) with search and JSON payload inspection.
-- Built reusable Admin Layout (`resources/views/components/layouts/admin.blade.php`) with dark mode support.
-- Created automated test suite `tests/Feature/AdminManagementTest.php` with 9 test scenarios (100% passing).
+- Enhanced `Book::scopeSearch` to perform multi-field lookups across title, subtitle, description, ISBN-10/13, authors, categories, and publisher.
+- Redesigned `BookController::index` to handle multi-faceted search:
+  - Multi-select categories (`categories[]`).
+  - Multi-select languages (`languages[]`).
+  - Minimum rating threshold (`min_rating` e.g. 4.5+, 4.0+, 3.5+).
+  - Publication Era / Decade presets (`2020s`, `2010s`, `2000s`, `1900-1999`, `classic`).
+  - Shelf availability status (`availability=available`).
+  - Multi-mode sorting (`rating_desc`, `popular`, `year_desc`, `year_asc`, `title_asc`, `title_desc`).
+- Rebuilt `resources/views/books/index.blade.php` with a 2-column discovery interface:
+  - Sticky Facet Sidebar with category counts, language filters, rating selectors, and era dropdowns.
+  - Active filter chips with individual `×` removal links and global "Reset All" action.
+  - Search query feedback banner.
+  - Responsive 3-column book card grid.
+- Optimized Eloquent queries with full relationship eager-loading (`publisher`, `authors`, `categories`, `copies`) to guarantee zero N+1 query overhead.
+- Created automated test suite `tests/Feature/AdvancedSearchTest.php` with 5 feature scenarios covering all search and facet dimensions (100% passing).
 - Formatted all code with Laravel Pint.
 
 In Progress:
@@ -41,7 +29,7 @@ In Progress:
 
 Pending:
 
-- Phase 8 — Advanced Search, Multi-Filter & Facets.
+- Phase 9 — Book Reviews, Ratings & Patron Feedback.
 
 Known Issues:
 
@@ -49,17 +37,17 @@ Known Issues:
 
 Testing Instructions:
 
-1. Run `vendor/bin/phpunit --colors=never tests/Feature/AdminManagementTest.php`.
-2. Sign in as admin (`admin@readora.test` / `password`).
-3. Visit `/admin` to view library metrics.
-4. Visit `/admin/circulations` to manage loans, check-in, or renew loans.
-5. Visit `/admin/books`, `/admin/copies`, `/admin/users`, and `/admin/audit-logs`.
+1. Run `vendor/bin/phpunit --colors=never tests/Feature/AdvancedSearchTest.php`.
+2. Visit `/books` in browser.
+3. Test searching for keywords (e.g. `Architecture`, `Martin`, `Python`).
+4. Select rating filters (★ 4.5+), era filters, and category multi-select.
+5. Click active filter removal `×` chips and "Reset All".
 
 Recommended Commit:
 
 ```bash
 git add .
-git commit -m "feat: implement Phase 7 admin dashboard and management suite"
+git commit -m "feat: implement Phase 8 advanced search and faceted filters"
 ```
 
-Next Phase: Phase 8 — Advanced Search, Multi-Filter & Facets
+Next Phase: Phase 9 — Book Reviews, Ratings & Patron Feedback

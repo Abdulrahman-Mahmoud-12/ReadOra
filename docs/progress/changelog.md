@@ -53,3 +53,8 @@
 - Built User Management (`/admin/users`) with role promote/demote safeguards (protecting last admin) and loan deletion protection.
 - Built Audit Log Viewer (`/admin/audit-logs`) with search and JSON payload inspection.
 - Added comprehensive feature test suite `AdminManagementTest.php` (100% passing) and documented features in `docs/features/admin-features.md`.
+- Completed Phase 8: Advanced Search, Multi-Filter & Facets.
+- Enhanced `Book::scopeSearch` to perform full multi-field lookups (titles, descriptions, ISBNs, authors, categories, publishers).
+- Built multi-facet discovery engine on `BookController::index` with categories, languages, minimum ratings, publication eras, and shelf availability filters.
+- Redesigned `books/index.blade.php` with 2-column layout, sticky faceted filter sidebar, active filter dismissible chips, and query highlighting.
+- Added comprehensive feature test suite `AdvancedSearchTest.php` (100% passing) and documented features in `docs/features/search-and-filters.md`.

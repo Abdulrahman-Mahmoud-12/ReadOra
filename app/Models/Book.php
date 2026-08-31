@@ -119,7 +119,7 @@ class Book extends Model
     }
 
     /**
-     * Scope a query to records matching the catalog search term.
+     * Scope a query to records matching the catalog search term across all fields.
      */
     public function scopeSearch(Builder $query, string $term): Builder
     {
@@ -132,10 +132,12 @@ class Book extends Model
         return $query->where(function (Builder $query) use ($term): void {
             $query->where('title', 'like', "%{$term}%")
                 ->orWhere('subtitle', 'like', "%{$term}%")
-                ->orWhere('isbn_10', $term)
-                ->orWhere('isbn_13', $term)
-                ->orWhereHas('authors', fn (Builder $query): Builder => $query->where('name', 'like', "%{$term}%"))
-                ->orWhereHas('categories', fn (Builder $query): Builder => $query->where('name', 'like', "%{$term}%"));
+                ->orWhere('description', 'like', "%{$term}%")
+                ->orWhere('isbn_10', 'like', "%{$term}%")
+                ->orWhere('isbn_13', 'like', "%{$term}%")
+                ->orWhereHas('authors', fn (Builder $q): Builder => $q->where('name', 'like', "%{$term}%"))
+                ->orWhereHas('categories', fn (Builder $q): Builder => $q->where('name', 'like', "%{$term}%"))
+                ->orWhereHas('publisher', fn (Builder $q): Builder => $q->where('name', 'like', "%{$term}%"));
         });
     }
 
