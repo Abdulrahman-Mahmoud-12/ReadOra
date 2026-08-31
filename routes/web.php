@@ -1,6 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuditLogController;
+use App\Http\Controllers\Admin\AdminAuthorController;
+use App\Http\Controllers\Admin\AdminBookController;
+use App\Http\Controllers\Admin\AdminBookCopyController;
+use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminCirculationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminPublisherController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookController;
@@ -63,4 +71,31 @@ Route::middleware('auth')->group(function () {
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+    // Circulation Management
+    Route::get('/circulations', [AdminCirculationController::class, 'index'])->name('circulations.index');
+    Route::post('/circulations/{borrowing}/return', [AdminCirculationController::class, 'returnBook'])->name('circulations.return');
+    Route::post('/circulations/{borrowing}/renew', [AdminCirculationController::class, 'renew'])->name('circulations.renew');
+
+    // Catalog Books Management
+    Route::resource('books', AdminBookController::class);
+
+    // Book Copies Inventory
+    Route::get('/copies', [AdminBookCopyController::class, 'index'])->name('copies.index');
+    Route::post('/copies', [AdminBookCopyController::class, 'store'])->name('copies.store');
+    Route::patch('/copies/{copy}', [AdminBookCopyController::class, 'update'])->name('copies.update');
+    Route::delete('/copies/{copy}', [AdminBookCopyController::class, 'destroy'])->name('copies.destroy');
+
+    // Authors, Categories, Publishers
+    Route::resource('authors', AdminAuthorController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('categories', AdminCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('publishers', AdminPublisherController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    // User Management
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Audit Logs
+    Route::get('/audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
 });

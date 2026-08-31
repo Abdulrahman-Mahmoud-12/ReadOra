@@ -1,23 +1,38 @@
 # Current Phase
 
-Current Phase: Phase 6 — Content-Based Recommendation Engine
+Current Phase: Phase 7 — Admin Dashboard & Full Management Suite
 
-Status: Complete, awaiting user confirmation to begin Phase 7.
+Status: Complete, awaiting user confirmation to begin Phase 8.
 
 Completed:
 
-- Implemented `App\Services\RecommendationService` featuring multi-signal content-based scoring:
-  - Category affinity weighting (borrowed +3.0, favorited +2.0).
-  - Author affinity weighting (borrowed +3.0, favorited +2.0).
-  - Quality and average rating scoring.
-  - Physical copy availability bonus.
-  - Active loan novelty filtering.
-  - Graceful cold-start fallback for guest patrons.
-- Added `getSimilarBooks()` method for intelligent book-to-book similarity matching.
-- Updated `DashboardController` (`/dashboard`) with personalized recommendations and dynamic reason hints.
-- Updated `BookController::show` (`/books/{slug}`) to render intelligent similar books via `RecommendationService`.
-- Enhanced `dashboard.blade.php` with recommendation reason badges ("Matches your interest in...", "By author you read...").
-- Created comprehensive automated unit test suite `RecommendationServiceTest.php` covering category affinity, author affinity, novelty filtering, cold-start handling, and similarity matching with 100% passing tests.
+- Created `audit_logs` migration and `AuditLog` model with before/after JSON payload tracking, IP addresses, and user agents.
+- Implemented `App\Services\AuditLogger` service to safely record administrative actions with automated credential redaction.
+- Implemented Admin Dashboard (`/admin`) with real-time statistics:
+  - Total catalog works, physical copies, available copies, borrowed copies.
+  - Active circulation loans, overdue loans count.
+  - Registered patrons count and active borrowers count.
+  - Live circulation feed and audit log stream.
+- Implemented Admin Circulation Desk (`/admin/circulations`):
+  - Multi-status filter tabs (`all`, `active`, `overdue`, `returned`).
+  - Search across patrons, book titles, and copy barcodes.
+  - Quick librarian Check In / Return action and 14-day Renewal override.
+- Implemented Admin Books Management (`/admin/books`):
+  - Catalog table with search, category filtering, and pagination.
+  - Create book form with authors/categories multi-select, publisher selection, ISBNs, and initial physical copy generation.
+  - Edit book form with complete bibliographic metadata fields.
+  - Delete book action with safeguard preventing deletion if copies are actively checked out.
+- Implemented Admin Book Copies Inventory (`/admin/copies`):
+  - Barcode lookup, location, and condition manager (`new`, `good`, `fair`, `damaged`, `maintenance`).
+  - Add copy action and delete copy action (blocked if currently borrowed).
+- Implemented Authors (`/admin/authors`), Categories (`/admin/categories`), and Publishers (`/admin/publishers`) CRUD with dependency safeguards.
+- Implemented Users & Roles Management (`/admin/users`):
+  - Role promotion (`user` -> `admin`) and demotion (`admin` -> `user`).
+  - Safeguard preventing demotion or deletion of the last remaining administrator account.
+  - Safeguard preventing deletion of patrons with active unreturned loans.
+- Implemented Audit Logs viewer (`/admin/audit-logs`) with search and JSON payload inspection.
+- Built reusable Admin Layout (`resources/views/components/layouts/admin.blade.php`) with dark mode support.
+- Created automated test suite `tests/Feature/AdminManagementTest.php` with 9 test scenarios (100% passing).
 - Formatted all code with Laravel Pint.
 
 In Progress:
@@ -26,11 +41,7 @@ In Progress:
 
 Pending:
 
-- Phase 7 — Admin Dashboard & Full Management Suite.
-- Admin circulation loans desk (active loans, overdue tracking, check-in).
-- Books, Copies, Authors, Categories, Publishers CRUD with image management.
-- User management with role demotion safeguards.
-- Audit logging (`audit_logs`) and system settings.
+- Phase 8 — Advanced Search, Multi-Filter & Facets.
 
 Known Issues:
 
@@ -38,17 +49,17 @@ Known Issues:
 
 Testing Instructions:
 
-1. Run `vendor/bin/phpunit --colors=never tests/Unit/RecommendationServiceTest.php`.
-2. Sign in as patron (`patron@readora.test` / `password`).
-3. Favorite or borrow books in specific categories (e.g. *Computer Science* or *Fiction*).
-4. Visit `/dashboard` and verify that "Curated Recommendations" prioritizes books matching your favorited categories and authors with dynamic reason badges.
-5. Visit any book details page (e.g. `/books/clean-code`) and inspect the "Related Books" section.
+1. Run `vendor/bin/phpunit --colors=never tests/Feature/AdminManagementTest.php`.
+2. Sign in as admin (`admin@readora.test` / `password`).
+3. Visit `/admin` to view library metrics.
+4. Visit `/admin/circulations` to manage loans, check-in, or renew loans.
+5. Visit `/admin/books`, `/admin/copies`, `/admin/users`, and `/admin/audit-logs`.
 
 Recommended Commit:
 
 ```bash
 git add .
-git commit -m "feat: implement Phase 6 content-based recommendation engine"
+git commit -m "feat: implement Phase 7 admin dashboard and management suite"
 ```
 
-Next Phase: Phase 7 — Admin Dashboard & Management Suite
+Next Phase: Phase 8 — Advanced Search, Multi-Filter & Facets
