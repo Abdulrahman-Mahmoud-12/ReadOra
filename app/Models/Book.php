@@ -77,6 +77,48 @@ class Book extends Model
     }
 
     /**
+     * Get favorites records for this book.
+     *
+     * @return HasMany<Favorite>
+     */
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    /**
+     * Users who favorited this book.
+     *
+     * @return BelongsToMany<User>
+     */
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
+
+    /**
+     * Check if a specific user favorited this book.
+     */
+    public function isFavoritedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->favorites()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Get reading history records for this book.
+     *
+     * @return HasMany<ReadingHistory>
+     */
+    public function readingHistories(): HasMany
+    {
+        return $this->hasMany(ReadingHistory::class);
+    }
+
+    /**
      * Scope a query to records matching the catalog search term.
      */
     public function scopeSearch(Builder $query, string $term): Builder

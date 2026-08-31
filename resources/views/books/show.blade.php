@@ -20,50 +20,64 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12">
             {{-- Left Column: Book Spine Cover & Actions --}}
             <div class="lg:col-span-4 flex flex-col gap-6">
-                {{-- Stylized Book Cover --}}
-                <div class="relative mx-auto flex aspect-[3/4] w-full max-w-sm flex-col justify-between overflow-hidden rounded-lg border border-navy-800 bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 p-6 shadow-2xl sm:p-8">
-                    {{-- Decorative pattern --}}
-                    <div class="absolute inset-0 opacity-15">
-                        <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <pattern id="show-pattern" width="24" height="24" patternUnits="userSpaceOnUse">
-                                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" stroke-width="0.5" class="text-gold-400" />
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#show-pattern)" />
-                        </svg>
-                    </div>
+                {{-- Book Cover Display --}}
+                <div class="relative mx-auto w-full max-w-sm overflow-hidden rounded-lg border border-navy-800 shadow-2xl bg-navy-950">
+                    @if($book->cover_image_path)
+                        <div class="relative aspect-[3/4] w-full overflow-hidden bg-navy-900">
+                            <img
+                                src="{{ $book->cover_image_path }}"
+                                alt="{{ $book->title }}"
+                                class="w-full h-full object-cover shadow-inner"
+                                onerror="this.parentElement.style.display='none'; this.parentElement.nextElementSibling.classList.remove('hidden');"
+                            />
+                        </div>
+                    @endif
 
-                    {{-- Left decorative spine --}}
-                    <div class="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-gold-600 to-gold-400/40 border-r border-gold-400/30"></div>
-
-                    <div class="relative pl-3">
-                        <div class="flex flex-wrap gap-1.5 mb-3">
-                            @foreach($book->categories as $category)
-                                <x-badge variant="gold" size="sm">
-                                    {{ $category->name }}
-                                </x-badge>
-                            @endforeach
+                    {{-- Stylized Fallback Book Spine Cover --}}
+                    <div class="{{ $book->cover_image_path ? 'hidden' : '' }} relative flex aspect-[3/4] w-full flex-col justify-between overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 p-6 sm:p-8">
+                        {{-- Decorative pattern --}}
+                        <div class="absolute inset-0 opacity-15">
+                            <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <pattern id="show-pattern" width="24" height="24" patternUnits="userSpaceOnUse">
+                                        <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" stroke-width="0.5" class="text-gold-400" />
+                                    </pattern>
+                                </defs>
+                                <rect width="100%" height="100%" fill="url(#show-pattern)" />
+                            </svg>
                         </div>
 
-                        <h1 class="text-2xl sm:text-3xl font-bold text-white leading-tight">
-                            {{ $book->title }}
-                        </h1>
-                        @if($book->subtitle)
-                            <p class="text-sm text-gold-300 font-medium mt-1">
-                                {{ $book->subtitle }}
-                            </p>
-                        @endif
-                    </div>
+                        {{-- Left decorative spine --}}
+                        <div class="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-gold-600 to-gold-400/40 border-r border-gold-400/30"></div>
 
-                    <div class="relative pl-3 pt-6 border-t border-navy-700/80">
-                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Author</p>
-                        <p class="text-base text-white font-medium mt-0.5">
-                            {{ $authorsString }}
-                        </p>
-                        @if($book->publisher)
-                            <p class="text-xs text-gray-400 mt-2">Published by <span class="text-gray-300 font-medium">{{ $book->publisher->name }}</span></p>
-                        @endif
+                        <div class="relative pl-3">
+                            <div class="flex flex-wrap gap-1.5 mb-3">
+                                @foreach($book->categories as $category)
+                                    <x-badge variant="gold" size="sm">
+                                        {{ $category->name }}
+                                    </x-badge>
+                                @endforeach
+                            </div>
+
+                            <h1 class="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                                {{ $book->title }}
+                            </h1>
+                            @if($book->subtitle)
+                                <p class="text-sm text-gold-300 font-medium mt-1">
+                                    {{ $book->subtitle }}
+                                </p>
+                            @endif
+                        </div>
+
+                        <div class="relative pl-3 pt-6 border-t border-navy-700/80">
+                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Author</p>
+                            <p class="text-base text-white font-medium mt-0.5">
+                                {{ $authorsString }}
+                            </p>
+                            @if($book->publisher)
+                                <p class="text-xs text-gray-400 mt-2">Published by <span class="text-gray-300 font-medium">{{ $book->publisher->name }}</span></p>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -76,35 +90,76 @@
                         </x-badge>
                     </div>
 
+                    @php
+                        $user = auth()->user();
+                        $hasActiveLoan = $user ? $user->activeBorrowings()->whereHas('bookCopy', fn($q) => $q->where('book_id', $book->id))->exists() : false;
+                        $isFavorited = $book->isFavoritedBy($user);
+                    @endphp
+
                     <div class="space-y-3">
-                        <x-button
-                            href="{{ route('borrowings.index') }}"
-                            variant="primary"
-                            size="md"
-                            class="w-full justify-center"
-                        >
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                            Borrow This Book
-                        </x-button>
-
-                        <x-button
-                            href="{{ route('favorites.index') }}"
-                            variant="outline"
-                            size="md"
-                            class="w-full justify-center"
-                        >
-                            <svg class="w-4 h-4 mr-2 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                            Save to Favorites
-                        </x-button>
-
                         @auth
+                            @if($hasActiveLoan)
+                                <div class="w-full py-2.5 px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                    Currently in Your Loans
+                                </div>
+                                <x-button
+                                    href="{{ route('borrowings.index') }}"
+                                    variant="outline"
+                                    size="md"
+                                    class="w-full justify-center"
+                                >
+                                    View in Circulation
+                                </x-button>
+                            @elseif($isAvailable)
+                                <form method="POST" action="{{ route('borrowings.store') }}">
+                                    @csrf
+                                    <input type="hidden" name="book_id" value="{{ $book->id }}">
+                                    <button
+                                        type="submit"
+                                        class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gradient-to-r from-navy-800 to-navy-950 hover:from-navy-700 hover:to-navy-900 text-white shadow-md hover:shadow-lg focus:ring-navy-500 border border-gold-500/20"
+                                    >
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                                        Borrow This Book
+                                    </button>
+                                </form>
+                            @else
+                                <button
+                                    disabled
+                                    class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-gray-100 dark:bg-navy-800 text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-navy-700"
+                                >
+                                    No Copies Available
+                                </button>
+                            @endif
+
+                            <form method="POST" action="{{ route('favorites.toggle', $book) }}">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="w-full inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors border {{ $isFavorited ? 'border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400' : 'border-gray-300 dark:border-navy-700 bg-white dark:bg-navy-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-navy-700' }}"
+                                >
+                                    <svg class="w-4 h-4 mr-2 {{ $isFavorited ? 'fill-current text-rose-500' : 'text-rose-500' }}" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                                    {{ $isFavorited ? 'Favorited' : 'Save to Favorites' }}
+                                </button>
+                            </form>
+
                             <div class="p-3 bg-navy-50 dark:bg-navy-950 rounded-xl border border-navy-100 dark:border-navy-800 text-xs text-gray-600 dark:text-gray-400">
-                                <span class="font-semibold text-navy-800 dark:text-gold-300">Patron Loan Limit:</span> 14 days standard borrowing period with renewal option.
+                                <span class="font-semibold text-navy-800 dark:text-gold-300">Patron Loan Limit:</span> 14 days standard borrowing period with online renewal.
                             </div>
                         @else
-                            <p class="text-center text-xs text-gray-500 dark:text-gray-400 pt-1">
-                                <a href="{{ route('login') }}" class="text-navy-600 dark:text-gold-400 font-semibold hover:underline">Sign in</a> to reserve or borrow this physical edition.
-                            </p>
+                            <a
+                                href="{{ route('login') }}"
+                                class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-gradient-to-r from-navy-800 to-navy-950 hover:from-navy-700 hover:to-navy-900 text-white shadow-md"
+                            >
+                                Sign in to Borrow
+                            </a>
+                            <a
+                                href="{{ route('login') }}"
+                                class="w-full inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 dark:border-navy-700 bg-white dark:bg-navy-800 text-gray-700 dark:text-gray-300"
+                            >
+                                <svg class="w-4 h-4 mr-2 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                                Sign in to Favorite
+                            </a>
                         @endauth
                     </div>
                 </div>

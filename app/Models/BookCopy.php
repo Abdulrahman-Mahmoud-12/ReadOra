@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['book_id', 'barcode', 'status', 'location', 'condition', 'acquisition_date'])]
 class BookCopy extends Model
@@ -30,6 +32,26 @@ class BookCopy extends Model
     public function book(): BelongsTo
     {
         return $this->belongsTo(Book::class);
+    }
+
+    /**
+     * Get all borrowings for this physical copy.
+     *
+     * @return HasMany<Borrowing>
+     */
+    public function borrowings(): HasMany
+    {
+        return $this->hasMany(Borrowing::class);
+    }
+
+    /**
+     * Get the currently active loan for this copy.
+     *
+     * @return HasOne<Borrowing>
+     */
+    public function activeBorrowing(): HasOne
+    {
+        return $this->hasOne(Borrowing::class)->where('status', 'active');
     }
 
     /**

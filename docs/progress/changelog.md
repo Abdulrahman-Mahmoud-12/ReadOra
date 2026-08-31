@@ -33,5 +33,10 @@
 - Created Patron personal space: Saved Favorites (`/favorites`), Borrowings History (`/borrowings`), and Profile Settings (`/profile`) with Digital Library Card.
 - Built reusable Blade components (`x-book-card`, `x-badge`, `x-stat-card`, `x-empty-state`).
 - Added automated feature tests (`BookDiscoveryTest.php`, `UserDashboardTest.php`) with 100% test pass rate.
-
-
+- Completed Phase 5: Borrowing & Circulation System.
+- Created migrations and Eloquent models for `borrowings`, `favorites`, and `reading_histories`.
+- Implemented `BorrowingService` with database transactions, row-level locking (`lockForUpdate`), patron active loan limits (max 5), duplicate loan prevention, checkouts, returns, and renewals.
+- Updated `BorrowingController` and `FavoriteController` with full circulation endpoints and favorites toggling.
+- Updated `books/show.blade.php`, `user/borrowings.blade.php`, `user/favorites.blade.php`, and `dashboard.blade.php` with real-time circulation UI and actions.
+- Added comprehensive feature test suite `BorrowingCirculationTest.php` with 100% passing tests.
+- Documented borrowing lifecycle in `docs/features/borrowing-system.md` and formatted code with Laravel Pint.

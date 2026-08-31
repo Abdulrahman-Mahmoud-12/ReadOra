@@ -20,6 +20,10 @@ class DashboardController extends Controller
         $availableBooks = Book::query()->whereHas('copies', fn ($q) => $q->where('status', 'available'))->count();
         $categoriesCount = Category::query()->count();
 
+        $activeLoansCount = $user->activeBorrowings()->count();
+        $favoritesCount = $user->favorites()->count();
+        $returnedLoansCount = $user->borrowings()->where('status', 'returned')->count();
+
         $recommendedBooks = Book::query()
             ->with(['authors', 'categories', 'copies'])
             ->orderByDesc('average_rating')
@@ -43,6 +47,9 @@ class DashboardController extends Controller
             'totalBooks' => $totalBooks,
             'availableBooks' => $availableBooks,
             'categoriesCount' => $categoriesCount,
+            'activeLoansCount' => $activeLoansCount,
+            'favoritesCount' => $favoritesCount,
+            'returnedLoansCount' => $returnedLoansCount,
             'recommendedBooks' => $recommendedBooks,
             'recentlyAdded' => $recentlyAdded,
             'popularCategories' => $popularCategories,

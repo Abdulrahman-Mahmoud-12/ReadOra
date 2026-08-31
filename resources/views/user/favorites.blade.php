@@ -21,7 +21,7 @@
         </div>
 
         {{-- Empty State --}}
-        @if($favorites->isEmpty())
+        @if($favoriteBooks->isEmpty())
             <div class="mb-12">
                 <x-empty-state
                     title="Your reading list is empty"
@@ -35,11 +35,31 @@
                 </x-empty-state>
             </div>
         @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
-                @foreach($favorites as $book)
-                    <x-book-card :book="$book" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+                @foreach($favoriteBooks as $book)
+                    <div class="relative group">
+                        <x-book-card :book="$book" />
+                        <form method="POST" action="{{ route('favorites.toggle', $book) }}" class="absolute top-3 right-3 z-10">
+                            @csrf
+                            <button
+                                type="submit"
+                                title="Remove from favorites"
+                                class="p-1.5 rounded-full bg-white/90 dark:bg-navy-900/90 shadow text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 hover:scale-110 transition-transform"
+                            >
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                 @endforeach
             </div>
+
+            @if($favoriteBooks->hasPages())
+                <div class="mb-12">
+                    {{ $favoriteBooks->links() }}
+                </div>
+            @endif
         @endif
 
         {{-- Suggested Reading Section --}}

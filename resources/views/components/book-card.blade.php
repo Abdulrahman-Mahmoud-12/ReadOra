@@ -11,43 +11,56 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'group flex min-w-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-gold-300 hover:shadow-xl dark:border-navy-800 dark:bg-navy-900 dark:hover:border-gold-500/50']) }}>
-    {{-- Book Cover Spine / Header --}}
-    <a href="{{ route('books.show', $book->slug) }}" class="relative block aspect-[4/3] bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 p-5 overflow-hidden group-hover:scale-[1.02] transition-transform duration-300">
-        {{-- Subtle background pattern --}}
-        <div class="absolute inset-0 opacity-15">
-            <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <pattern id="card-pattern-{{ $book->id }}" width="20" height="20" patternUnits="userSpaceOnUse">
-                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" stroke-width="0.5" class="text-gold-400" />
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#card-pattern-{{ $book->id }})" />
-            </svg>
+    {{-- Book Cover Header --}}
+    <a href="{{ route('books.show', $book->slug) }}" class="relative block aspect-[4/3] bg-navy-950 overflow-hidden">
+        @if($book->cover_image_path)
+            <img
+                src="{{ $book->cover_image_path }}"
+                alt="{{ $book->title }}"
+                class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');"
+            />
+            {{-- Dark gradient overlay for text readability --}}
+            <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/40 to-transparent"></div>
+        @endif
+
+        {{-- Fallback Stylized Spine (shown if no cover or image fails to load) --}}
+        <div class="{{ $book->cover_image_path ? 'hidden' : '' }} absolute inset-0 bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 p-5 flex flex-col justify-between">
+            <div class="absolute inset-0 opacity-15">
+                <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="card-pattern-{{ $book->id }}" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" stroke-width="0.5" class="text-gold-400" />
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#card-pattern-{{ $book->id }})" />
+                </svg>
+            </div>
+            <div class="absolute left-0 top-0 bottom-0 w-2.5 bg-gold-500/20 border-r border-gold-500/30"></div>
         </div>
 
-        {{-- Book Spine effect --}}
-        <div class="absolute left-0 top-0 bottom-0 w-2.5 bg-gold-500/20 border-r border-gold-500/30"></div>
-
-        <div class="relative h-full flex min-w-0 flex-col justify-between pl-2">
+        {{-- Badges & Title Overlay --}}
+        <div class="absolute inset-0 p-4 flex flex-col justify-between z-10">
             <div class="flex flex-wrap items-start justify-between gap-2">
                 @if($firstCategory)
-                    <x-badge variant="gold" size="sm" class="max-w-[9rem] truncate whitespace-nowrap">
+                    <x-badge variant="gold" size="sm" class="max-w-[9rem] truncate whitespace-nowrap shadow-sm">
                         {{ $firstCategory->name }}
                     </x-badge>
                 @else
                     <span></span>
                 @endif
 
-                <x-badge :variant="$isAvailable ? 'available' : 'borrowed'" size="sm" class="shrink-0">
+                <x-badge :variant="$isAvailable ? 'available' : 'borrowed'" size="sm" class="shrink-0 shadow-sm">
                     {{ $isAvailable ? "{$availableCopies} Avail" : 'Checked Out' }}
                 </x-badge>
             </div>
 
             <div>
-                <h4 class="text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-gold-300 transition-colors">
+                <h4 class="text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-gold-300 transition-colors drop-shadow-md">
                     {{ $book->title }}
                 </h4>
-                <p class="text-xs text-gray-300 line-clamp-1 mt-1 font-medium">
+                <p class="text-xs text-gray-200 line-clamp-1 mt-1 font-medium drop-shadow">
                     {{ $authorsString }}
                 </p>
             </div>

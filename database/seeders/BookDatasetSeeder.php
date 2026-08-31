@@ -7,6 +7,7 @@ use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Category;
 use App\Models\Publisher;
+use App\Services\BookImportService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,18 @@ class BookDatasetSeeder extends Seeder
      */
     public function seedCatalog(): array
     {
+        $csvPath = database_path('data/books.csv');
+        if (file_exists($csvPath) && is_readable($csvPath)) {
+            $importService = app(BookImportService::class);
+            $summary = $importService->importFromCsv($csvPath);
+
+            return [
+                'books' => $summary['books'],
+                'copies' => $summary['copies'],
+                'skipped' => $summary['skipped'],
+            ];
+        }
+
         $records = $this->catalogData();
         $summary = ['books' => 0, 'copies' => 0, 'skipped' => 0];
 
