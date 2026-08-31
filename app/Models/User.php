@@ -106,6 +106,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Get personal API tokens for the user.
+     *
+     * @return HasMany<ApiToken>
+     */
+    public function apiTokens(): HasMany
+    {
+        return $this->hasMany(ApiToken::class);
+    }
+
+    /**
      * Ensure standard shelves exist for this user.
      */
     public function ensureDefaultShelves(): void

@@ -77,3 +77,6 @@
 - Created `AiService` and `AiAssistantController` for conversational library recommendations and automated book analysis.
 - Built interactive AI Assistant chat page (`/assistant`) and on-demand "Generate AI Insights" widget on Book Details (`books/show.blade.php`).
 - Added comprehensive feature test suite `AiAssistantTest.php` (100% passing) and documented features in `docs/features/ai-assistant.md`.
+- Completed Phase 12 security hardening: authenticated and rate-limited AI
+	routes, hashed personal bearer tokens, protected `/api/me`, token revocation,
+	and focused security tests.

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Book;
 use App\Models\Publisher;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -14,13 +15,15 @@ class AiAssistantTest extends TestCase
 
     public function test_can_view_ai_assistant_page(): void
     {
-        $response = $this->get(route('assistant.index'));
+        $response = $this->actingAs(User::factory()->create())->get(route('assistant.index'));
         $response->assertStatus(200);
         $response->assertSee('Ask ReadOra AI');
     }
 
     public function test_ai_chat_returns_successful_completion(): void
     {
+        $user = User::factory()->create();
+
         Http::fake([
             'https://openrouter.ai/api/v1/chat/completions' => Http::response([
                 'choices' => [
@@ -36,7 +39,7 @@ class AiAssistantTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->postJson(route('assistant.chat'), [
+        $response = $this->actingAs($user)->postJson(route('assistant.chat'), [
             'message' => 'Can you recommend a good programming book?',
         ]);
 
@@ -71,7 +74,7 @@ class AiAssistantTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->postJson(route('assistant.chat'), [
+        $response = $this->actingAs(User::factory()->create())->postJson(route('assistant.chat'), [
             'message' => 'Recommend a book.',
         ]);
 
@@ -85,6 +88,7 @@ class AiAssistantTest extends TestCase
 
     public function test_ai_book_insights_endpoint_returns_analysis(): void
     {
+        $user = User::factory()->create();
         $publisher = Publisher::factory()->create();
         $book = Book::factory()->create([
             'publisher_id' => $publisher->id,
@@ -104,7 +108,7 @@ class AiAssistantTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->getJson(route('books.ai-insights', $book));
+        $response = $this->actingAs($user)->getJson(route('books.ai-insights', $book));
         $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
@@ -115,11 +119,13 @@ class AiAssistantTest extends TestCase
 
     public function test_graceful_fallback_when_ai_api_fails(): void
     {
+        $user = User::factory()->create();
+
         Http::fake([
             'https://openrouter.ai/api/v1/chat/completions' => Http::response(['error' => 'Rate limit exceeded'], 429),
         ]);
 
-        $response = $this->postJson(route('assistant.chat'), [
+        $response = $this->actingAs($user)->postJson(route('assistant.chat'), [
             'message' => 'Hello AI',
         ]);
 
