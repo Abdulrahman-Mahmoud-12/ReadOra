@@ -28,6 +28,15 @@ class SecurityPhaseTest extends TestCase
             ->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     }
 
+    public function test_forwarded_https_requests_generate_https_urls(): void
+    {
+        $this->withHeaders([
+            'X-Forwarded-Proto' => 'https',
+            'X-Forwarded-Host' => 'readora.test',
+        ])->get(route('home'))
+            ->assertSee('https://readora.test');
+    }
+
     public function test_user_can_issue_and_use_a_hashed_api_token(): void
     {
         $user = User::factory()->create();

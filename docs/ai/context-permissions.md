@@ -1,9 +1,13 @@
 # AI Context Permissions
 
-The current AI context scope is public catalog data only: book titles, authors,
-categories, ratings, and available category names. AI routes require an
-authenticated user before context construction or provider calls.
+Normal users receive public catalog data only: book titles, authors,
+categories, ratings, and available category names. Authenticated administrators
+also receive aggregate operational data: catalog and inventory totals, user
+counts, loan counts, overdue counts, and limited recent circulation summaries.
+AI routes require an authenticated user before context construction or provider
+calls.
 
-The service never sends passwords, API keys, environment values, audit logs, or
-another user's private data to a provider. User-private and admin context are
-reserved for a future permission-aware context service.
+The service never sends passwords, API keys, environment values, bearer tokens,
+raw audit logs, or another user's private data to a provider. Administrative
+context is selected server-side from the authenticated admin role and is not
+controlled by the model or by user prompt text.

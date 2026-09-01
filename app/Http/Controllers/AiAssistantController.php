@@ -46,7 +46,7 @@ class AiAssistantController extends Controller
         $userMessage = $validated['message'];
         $history = $validated['history'] ?? [];
 
-        $aiResponse = $this->aiService->askLibrarian($userMessage, $history);
+        $aiResponse = $this->aiService->askLibrarian($request->user(), $userMessage, $history);
 
         return response()->json([
             'success' => true,

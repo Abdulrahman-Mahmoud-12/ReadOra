@@ -3,8 +3,12 @@
 namespace App\Services;
 
 use App\Models\Book;
+use App\Models\BookCopy;
+use App\Models\Borrowing;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class AiService
@@ -17,6 +21,8 @@ class AiService
 
     protected string $model;
 
+    protected int $maxTokens;
+
     public function __construct()
     {
         $this->provider = (string) config('ai.provider', 'openrouter');
@@ -25,6 +31,7 @@ class AiService
         $this->apiKey = (string) ($providerConfig['api_key'] ?? '');
         $this->baseUrl = rtrim((string) ($providerConfig['base_url'] ?? ''), '/');
         $this->model = (string) ($providerConfig['model'] ?? '');
+        $this->maxTokens = (int) ($providerConfig['max_tokens'] ?? 512);
     }
 
     /**
@@ -32,9 +39,15 @@ class AiService
      *
      * @param  array<array{role: string, content: string, reasoning_details?: mixed}>  $history
      */
-    public function askLibrarian(string $userMessage, array $history = []): array
+    public function askLibrarian(User $user, string $userMessage, array $history = []): array
     {
-        $systemContext = $this->buildSystemContext();
+        $administrativeAnswer = $this->answerAdministrativeQuestion($user, $userMessage);
+
+        if ($administrativeAnswer !== null) {
+            return ['content' => $administrativeAnswer];
+        }
+
+        $systemContext = $this->buildSystemContext($user);
 
         $messages = [
             ['role' => 'system', 'content' => $systemContext],
@@ -103,7 +116,7 @@ PROMPT;
      */
     protected function sendChatCompletion(array $messages): array
     {
-        if (empty($this->apiKey)) {
+        if (empty($this->apiKey) && $this->provider !== 'ollama') {
             return ['content' => "ReadOra AI is currently in offline mode. Please configure the selected AI provider's API key in the environment settings to enable live AI responses."];
         }
 
@@ -115,16 +128,21 @@ PROMPT;
             $payload = [
                 'model' => $this->model,
                 'messages' => $messages,
+                'max_tokens' => $this->maxTokens,
+                'temperature' => 0.2,
             ];
 
             if ($this->provider === 'openrouter') {
                 $payload['reasoning'] = ['enabled' => true];
             }
 
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer {$this->apiKey}",
-                'Content-Type' => 'application/json',
-            ])
+            $headers = ['Content-Type' => 'application/json'];
+
+            if ($this->apiKey !== '') {
+                $headers['Authorization'] = "Bearer {$this->apiKey}";
+            }
+
+            $response = Http::withHeaders($headers)
                 ->timeout(35)
                 ->post($endpoint, $payload);
 
@@ -155,17 +173,31 @@ PROMPT;
     /**
      * Build dynamic library catalog grounding context for the AI.
      */
-    protected function buildSystemContext(): string
+    protected function buildSystemContext(User $user): string
     {
-        $topBooks = Book::query()
-            ->with(['authors', 'categories'])
-            ->orderByDesc('average_rating')
-            ->take(8)
-            ->get()
-            ->map(fn ($b) => "• \"{$b->title}\" by {$b->authors->pluck('name')->join(', ')} [{$b->categories->pluck('name')->join(', ')}] (★ {$b->average_rating})")
-            ->join("\n");
+        $catalogContext = Cache::remember('ai.catalog-context', now()->addMinutes(5), function (): array {
+            $topBooks = Book::query()
+                ->with(['authors', 'categories'])
+                ->orderByDesc('average_rating')
+                ->take(4)
+                ->get()
+                ->map(fn ($b) => "• \"{$b->title}\" by {$b->authors->pluck('name')->join(', ')} [{$b->categories->pluck('name')->join(', ')}] (★ {$b->average_rating})")
+                ->join("\n");
 
-        $categories = Category::pluck('name')->join(', ');
+            return [
+                'top_books' => $topBooks,
+                'categories' => Category::pluck('name')->join(', '),
+            ];
+        });
+
+        $topBooks = $catalogContext['top_books'];
+        $categories = $catalogContext['categories'];
+
+        $administrativeContext = '';
+
+        if ($user->isAdmin()) {
+            $administrativeContext = $this->buildAdministrativeContext();
+        }
 
         return <<<SYSTEM
 You are ReadOra AI — the intelligent, warm, and highly knowledgeable Virtual Librarian of the ReadOra Library System.
@@ -178,7 +210,73 @@ Current Available Catalog Genres: {$categories}
 Featured Catalog Works:
 {$topBooks}
 
+{$administrativeContext}
+
 Always be concise, articulate, inspiring, and formatted with clean markdown (bullet points, bold text).
 SYSTEM;
+    }
+
+    /**
+     * Build aggregate operational context for authenticated administrators.
+     */
+    protected function buildAdministrativeContext(): string
+    {
+        $registeredUsers = User::count();
+        $catalogBooks = Book::count();
+        $physicalCopies = BookCopy::count();
+        $availableCopies = BookCopy::where('status', BookCopy::STATUS_AVAILABLE)->count();
+        $activeLoans = Borrowing::where('status', 'active')->count();
+        $overdueLoans = Borrowing::overdue()->count();
+        $recentBorrowings = Borrowing::query()
+            ->with(['user', 'bookCopy.book'])
+            ->latest('id')
+            ->take(5)
+            ->get()
+            ->map(fn (Borrowing $borrowing): string => "- {$borrowing->user->name}: {$borrowing->bookCopy->book->title} ({$borrowing->status})")
+            ->join("\n");
+
+        return <<<ADMIN
+Administrator-only operational context (the authenticated administrator is authorized to use this summary):
+- Registered users: {$registeredUsers}
+- Catalog books: {$catalogBooks}
+- Physical copies: {$physicalCopies}
+- Available copies: {$availableCopies}
+- Active loans: {$activeLoans}
+- Overdue loans: {$overdueLoans}
+Recent circulation summaries:
+{$recentBorrowings}
+
+Do not disclose passwords, API keys, environment variables, bearer tokens, or raw audit payloads. This administrative context is available only to authenticated administrators.
+ADMIN;
+    }
+
+    /**
+     * Answer safe aggregate administrative questions without delegating access control to the model.
+     */
+    protected function answerAdministrativeQuestion(User $user, string $userMessage): ?string
+    {
+        if (! $user->isAdmin()) {
+            return null;
+        }
+
+        $message = mb_strtolower($userMessage);
+
+        if (preg_match('/(how many|number of|count).*(users|patrons|members)/', $message)) {
+            return 'There are **'.User::count().' registered users** in the library system.';
+        }
+
+        if (preg_match('/(how many|number of|count).*(books|titles|works)/', $message)) {
+            return 'There are **'.Book::count().' books** in the catalog.';
+        }
+
+        if (preg_match('/(how many|number of|count).*(copies|inventory)/', $message)) {
+            return 'The library has **'.BookCopy::count().' physical copies**, including **'.BookCopy::where('status', BookCopy::STATUS_AVAILABLE)->count().' available copies**.';
+        }
+
+        if (preg_match('/(how many|number of|count).*(active loans|borrowings)/', $message)) {
+            return 'There are **'.Borrowing::where('status', 'active')->count().' active loans** and **'.Borrowing::overdue()->count().' overdue loans**.';
+        }
+
+        return null;
     }
 }

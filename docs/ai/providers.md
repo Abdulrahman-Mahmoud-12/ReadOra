@@ -1,8 +1,12 @@
 # AI Providers
 
-ReadOra will support NVIDIA NIM and OpenRouter through a provider abstraction.
+ReadOra supports NVIDIA NIM, OpenRouter, and Ollama through one provider-aware
+service boundary.
 
-Phase 1 adds configuration placeholders only. The implementation will be added during the AI assistant phases.
+The implementation uses the shared OpenAI-compatible chat-completions format.
+OpenRouter receives the optional reasoning flag and preserves reasoning
+metadata. NVIDIA NIM and Ollama use the common messages payload. Ollama runs
+locally and does not require an API key.
 
 Planned contract:
 
